@@ -1,0 +1,24 @@
+<div *ngIf="isOpen" class="modal-overlay">
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+  <div class="modal-container">
+    <div class="modal-icon">
+      <div class="icon-container">
+        <svg class="logout-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="modal-content">
+      <h2 class="modal-title">Log Out</h2>
+      <p class="modal-text">
+        Are you sure you want to log out? You will need to sign in again to access the admin panel.
+      </p>
+    </div>
+
+    <div class="modal-actions">
+      <button (click)="closeModal()" class="btn-secondary">No, Stay</button>
+      <button (click)="onConfirm()" class="btn-primary">Yes, Log Out</button>
+    </div>
+  </div>
+</div>

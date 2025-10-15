@@ -1,0 +1,27 @@
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <h2>Night Up</h2>
+      <p>Backoffice</p>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a 
+      *ngFor="let item of menuItems"
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      class="nav-item"
+    >
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          stroke-width="2" 
+          [attr.d]="item.icon" 
+        />
+      </svg>
+      <span class="nav-label">{{ item.label }}</span>
+    </a>
+  </nav>
+</div>

@@ -1,0 +1,185 @@
+<div class="connected-users-container">
+  <!-- HEADER -->
+  <header class="header-section">
+    <div class="header-content">
+      <h1 class="page-title">Connected Users</h1>
+      <p class="page-subtitle">Monitor active users in real-time</p>
+    </div>
+    <div class="header-controls">
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span class="live-text">Live</span>
+      </div>
+      <div class="view-toggle">
+        <button (click)="viewMode = 'grid'" [class.active]="viewMode === 'grid'" class="toggle-btn">
+          <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+        </button>
+        <button (click)="viewMode = 'list'" [class.active]="viewMode === 'list'" class="toggle-btn">
+          <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SUMMARY CARDS -->
+  <section class="summary-grid">
+    <div class="summary-card">
+      <div class="card-header">
+        <div class="card-title">Connected Now</div>
+        <div class="card-icon green">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="card-value">342</div>
+      <div class="card-description">13.4% of total</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-header">
+        <div class="card-title">Peak Today</div>
+        <div class="card-icon blue">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+      </div>
+      <div class="card-value">487</div>
+      <div class="card-description">At 10:30 PM</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-header">
+        <div class="card-title">Avg Time</div>
+        <div class="card-icon purple">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="card-value">23 min</div>
+      <div class="card-description">Per session</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-header">
+        <div class="card-title">New Sessions</div>
+        <div class="card-icon orange">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+        </div>
+      </div>
+      <div class="card-value orange-text">+47</div>
+      <div class="card-description">Last hour</div>
+    </div>
+  </section>
+
+  <!-- USERS GRID VIEW -->
+  <div *ngIf="viewMode === 'grid'" class="users-grid">
+    <div *ngFor="let user of connectedUsers" class="user-card">
+      <div class="user-header">
+        <div class="user-info">
+          <div class="avatar-container">
+            <div class="user-avatar">{{ user.avatar }}</div>
+            <div [class]="'status-dot ' + user.status"></div>
+          </div>
+          <div class="user-details">
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-activity">{{ user.lastActivity }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="user-meta">
+        <div class="meta-item">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          </svg>
+          {{ user.location }}
+        </div>
+        <div class="meta-item">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Connected: {{ user.duration }}
+        </div>
+      </div>
+
+      <div class="user-actions">
+        <button class="action-btn primary">View Profile</button>
+        <button class="action-btn danger">
+          <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS TABLE VIEW -->
+  <div *ngIf="viewMode === 'list'" class="users-table-container">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Status</th>
+          <th>Location</th>
+          <th>Last Activity</th>
+          <th>Duration</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of connectedUsers">
+          <td>
+            <div class="table-user">
+              <div class="avatar-container">
+                <div class="user-avatar small">{{ user.avatar }}</div>
+                <div [class]="'status-dot ' + user.status"></div>
+              </div>
+              <span class="user-name">{{ user.name }}</span>
+            </div>
+          </td>
+          <td>
+            <span [class]="'status-badge ' + user.status">
+              {{ user.status === 'online' ? 'Online' : 'Idle' }}
+            </span>
+          </td>
+          <td class="table-data">{{ user.location }}</td>
+          <td class="table-data">{{ user.lastActivity }}</td>
+          <td class="table-data">{{ user.duration }}</td>
+          <td>
+            <div class="table-actions">
+              <button class="table-btn" title="View profile">
+                <svg class="table-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
+              <button class="table-btn danger" title="Disconnect">
+                <svg class="table-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- INFO NOTE -->
+  <div class="info-note">
+    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <div class="info-text">
+      These are sample users. We haven't yet integrated WebSockets to obtain real-time data from connected users.
+    </div>
+  </div>
+</div>

@@ -1,0 +1,165 @@
+<!-- Main container for the home page -->
+<div class="home-container">
+  
+  <!-- HEADER SECTION -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1 class="header-title">Administration Panel</h1>
+      <p class="header-subtitle">Manage and monitor the platform</p>
+    </div>
+    <div class="header-actions">
+      <!-- Settings menu component -->
+      <app-settings-menu></app-settings-menu>
+    </div>
+  </header>
+
+  <!-- STATS CARDS GRID -->
+  <section class="stats-grid">
+    
+    <!-- Total Users Card -->
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Total Users</div>
+        <div class="stat-icon user-icon">
+          <!-- User icon SVG -->
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">2,547</div>
+      <div class="stat-trend positive">+12% vs last month</div>
+    </article>
+
+    <!-- Active Now Card -->
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Active Now</div>
+        <div class="stat-icon active-icon">
+          <!-- Active users icon SVG -->
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">342</div>
+      <div class="stat-trend neutral">13/6/6 offset</div>
+    </article>
+
+    <!-- Active Events Card -->
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Active Experts</div>
+        <div class="stat-icon event-icon">
+          <!-- Calendar/event icon SVG -->
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">50</div>
+      <div class="stat-trend positive">+ 9 minutes</div>
+    </article>
+
+    <!-- Venues Card -->
+    <article class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Yeknuts</div>
+        <div class="stat-icon venue-icon">
+          <!-- Location icon SVG -->
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">25</div>
+      <div class="stat-trend neutral">8-5 visits</div>
+    </article>
+  </section>
+
+  <!-- MAIN CONTENT GRID - Two columns on desktop -->
+  <section class="content-grid">
+    
+    <!-- LEFT COLUMN: Recent Activity -->
+    <article class="content-card">
+      <h2 class="content-title">Recent Activity</h2>
+      <div class="activity-list">
+        
+        <!-- Loop through each activity item -->
+        <div *ngFor="let activity of recentActivities" class="activity-item">
+          
+          <!-- Activity icon with dynamic class based on type -->
+          <div class="activity-icon" [ngClass]="'icon-' + activity.type">
+            
+            <!-- User activity icon -->
+            <svg *ngIf="activity.type === 'user'" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            
+            <!-- Event activity icon -->
+            <svg *ngIf="activity.type === 'event'" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            
+            <!-- Alert activity icon -->
+            <svg *ngIf="activity.type === 'alert'" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            
+            <!-- Location activity icon -->
+            <svg *ngIf="activity.type === 'location'" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            </svg>
+          </div>
+          
+          <!-- Activity content -->
+          <div class="activity-content">
+            <div class="activity-action">{{ activity.action }}</div>
+            <div class="activity-meta">{{ activity.user }} • {{ activity.time }}</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- RIGHT COLUMN: Quick Statistics -->
+    <article class="content-card">
+      <h2 class="content-title">Quick Statistics</h2>
+      
+      <!-- Stats list with progress bars -->
+      <div class="stats-list">
+        <div *ngFor="let stat of quickStats" class="stat-item">
+          <div class="stat-info">
+            <span class="stat-label">{{ stat.label }}</span>
+            <span class="stat-value">{{ stat.value }}</span>
+          </div>
+          <!-- Progress bar with dynamic width -->
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="stat.percentage"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics cards at the bottom -->
+      <div class="metrics-grid">
+        <div class="metric-card report-card">
+          <div class="metric-label">REPORT</div>
+          <div class="metric-value">3</div>
+        </div>
+        <div class="metric-card verification-card">
+          <div class="metric-label">VERIFICATION</div>
+          <div class="metric-value">12</div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>

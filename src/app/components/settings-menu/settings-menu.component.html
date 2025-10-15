@@ -1,0 +1,180 @@
+<div class="settings-menu">
+  <button 
+    (click)="isOpen = !isOpen"
+    class="settings-button"
+  >
+    <svg class="settings-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+    Settings
+  </button>
+
+  <div 
+    *ngIf="isOpen"
+    class="settings-backdrop"
+    (click)="isOpen = false"
+  ></div>
+
+  <div 
+    *ngIf="isOpen"
+    class="settings-dropdown"
+  >
+    <div class="dropdown-header">
+      <div class="dropdown-title">Settings</div>
+      <div class="dropdown-subtitle">Manage your preferences</div>
+    </div>
+
+    <div class="dropdown-content">
+      <div class="menu-item">
+        <div class="menu-item-content">
+          <div class="menu-icon theme-icon">
+            <svg *ngIf="theme === 'dark'" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <svg *ngIf="theme === 'light'" class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+          <div class="menu-text">
+            <div class="menu-label">Theme</div>
+            <div class="menu-description">{{ theme === 'dark' ? 'Dark' : 'Light' }} mode</div>
+          </div>
+        </div>
+        <button
+          (click)="toggleTheme()"
+          [class]="'theme-toggle ' + (theme === 'dark' ? 'dark' : 'light')"
+        >
+          <div class="theme-toggle-handle"></div>
+        </button>
+      </div>
+
+      <div class="menu-item">
+        <button 
+          (click)="showLanguageMenu = !showLanguageMenu"
+          class="language-button"
+        >
+          <div class="menu-item-content">
+            <div class="menu-icon language-icon">
+              {{ currentLanguage.flag }}
+            </div>
+            <div class="menu-text">
+              <div class="menu-label">Language</div>
+              <div class="menu-description">{{ currentLanguage.name }}</div>
+            </div>
+          </div>
+          <svg 
+            [class]="'language-arrow ' + (showLanguageMenu ? 'open' : '')"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        <div *ngIf="showLanguageMenu" class="language-submenu">
+          <button
+            *ngFor="let lang of languages"
+            (click)="selectLanguage(lang.code)"
+            [class]="'language-option ' + (language === lang.code ? 'active' : '')"
+          >
+            <span class="language-flag">{{ lang.flag }}</span>
+            <span class="language-name">{{ lang.name }}</span>
+            <svg *ngIf="language === lang.code" class="language-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="menu-divider"></div>
+
+      <button 
+        (click)="showPasswordModal = true; isOpen = false;"
+        class="menu-item-button"
+      >
+        <div class="menu-icon password-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          </svg>
+        </div>
+        <div class="menu-text">
+          <div class="menu-label">Change Password</div>
+          <div class="menu-description">Update your password</div>
+        </div>
+      </button>
+
+      <button 
+        (click)="showEmailModal = true; isOpen = false;"
+        class="menu-item-button"
+      >
+        <div class="menu-icon email-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div class="menu-text">
+          <div class="menu-label">Change Email</div>
+          <div class="menu-description">Update your email address</div>
+        </div>
+      </button>
+
+      <button 
+        (click)="showPolicyModal = true; isOpen = false;"
+        class="menu-item-button"
+      >
+        <div class="menu-icon policy-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div class="menu-text">
+          <div class="menu-label">Company Policy</div>
+          <div class="menu-description">View terms and policies</div>
+        </div>
+      </button>
+
+      <div class="menu-divider"></div>
+
+      <button 
+        (click)="showLogoutModal = true; isOpen = false;"
+        class="menu-item-button logout-button"
+      >
+        <div class="menu-icon logout-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+        </div>
+        <div class="menu-text">
+          <div class="menu-label logout-label">Log Out</div>
+          <div class="menu-description">Sign out of your account</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALES CORREGIDOS - USANDO ONE-WAY BINDING -->
+<app-change-password-modal 
+  [isOpen]="showPasswordModal"
+  (onClose)="showPasswordModal = false"
+></app-change-password-modal>
+
+<app-change-email-modal 
+  [isOpen]="showEmailModal"
+  (onClose)="showEmailModal = false"
+></app-change-email-modal>
+
+<app-company-policy-modal 
+  [isOpen]="showPolicyModal"
+  (onClose)="showPolicyModal = false"
+></app-company-policy-modal>
+
+<app-logout-modal 
+  [isOpen]="showLogoutModal"
+  (onClose)="showLogoutModal = false"
+  (confirm)="logout()"
+></app-logout-modal>

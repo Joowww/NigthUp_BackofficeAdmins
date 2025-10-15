@@ -1,0 +1,97 @@
+<div *ngIf="isOpen" class="modal-overlay">
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+  <div class="modal-container">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Company Policy & Terms</h2>
+        <p class="modal-subtitle">Last updated: October 11, 2025</p>
+      </div>
+      <button (click)="closeModal()" class="close-button">
+        <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-content">
+      <div class="policy-section">
+        <h3 class="section-title">1. Introduction</h3>
+        <p class="section-text">
+          Welcome to Night Up. By accessing and using our platform, you agree to comply with and be bound by the following terms and conditions. Night Up is a social networking platform designed to connect nightlife enthusiasts with venues, events, and entertainment experiences.
+        </p>
+      </div>
+
+      <div class="policy-section">
+        <h3 class="section-title">2. User Conduct & Responsibilities</h3>
+        <p class="section-text">
+          Users of Night Up agree to:
+        </p>
+        <ul class="policy-list">
+          <li class="policy-item">
+            <span class="bullet">•</span>
+            <span>Provide accurate and truthful information when creating an account</span>
+          </li>
+          <li class="policy-item">
+            <span class="bullet">•</span>
+            <span>Respect other users and maintain a safe, inclusive community</span>
+          </li>
+          <li class="policy-item">
+            <span class="bullet">•</span>
+            <span>Not engage in harassment, hate speech, or discriminatory behavior</span>
+          </li>
+          <li class="policy-item">
+            <span class="bullet">•</span>
+            <span>Not post inappropriate, offensive, or illegal content</span>
+          </li>
+          <li class="policy-item">
+            <span class="bullet">•</span>
+            <span>Comply with all applicable local laws and regulations</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3 class="section-title">3. Privacy & Data Protection</h3>
+        <p class="section-text">
+          We take your privacy seriously. Night Up collects and processes personal data in accordance with GDPR and other applicable data protection regulations. User data is encrypted and stored securely. We do not sell personal information to third parties. Event attendance and location data may be shared with venue organizers for operational purposes only.
+        </p>
+      </div>
+
+      <div class="policy-section">
+        <h3 class="section-title">4. Content & Intellectual Property</h3>
+        <p class="section-text">
+          Users retain ownership of content they post on Night Up. By posting content, you grant Night Up a non-exclusive, worldwide license to use, display, and distribute your content on the platform. Night Up reserves the right to remove content that violates our community guidelines or terms of service.
+        </p>
+      </div>
+
+      <div class="policy-section">
+        <h3 class="section-title">5. Event Organizers & Venues</h3>
+        <p class="section-text">
+          Event organizers and venue operators are responsible for the accuracy of event information, ticket pricing, and event execution. Night Up acts as a platform facilitator and is not liable for event cancellations, venue issues, or disputes between users and organizers. All transactions are subject to the organizer's refund policy.
+        </p>
+      </div>
+
+      <div class="contact-section">
+        <h3 class="section-title">Contact Information</h3>
+        <div class="contact-info">
+          <div class="contact-item">
+            <span class="contact-label">Email:</span>
+            <span class="contact-value">legal&#64;nightup.com</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-label">Support:</span>
+            <span class="contact-value">support&#64;nightup.com</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-label">Address:</span>
+            <span class="contact-value">Night Up Inc., 123 Nightlife Ave, Barcelona, Spain</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button (click)="closeModal()" class="btn-primary">Close</button>
+    </div>
+  </div>
+</div>
