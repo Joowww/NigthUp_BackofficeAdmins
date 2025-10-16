@@ -95,14 +95,30 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </button>
-              <button class="action-btn edit" title="Edit">
+              
+              <!-- Botón de editar -->
+              <button class="action-btn edit" title="Edit" (click)="openEditModal(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </button>
-              <button class="action-btn delete" title="Delete">
+
+              <!-- Botón de eliminar/deshabilitar -->
+              <button class="action-btn delete" title="Delete" (click)="openDeleteModal(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+
+              <!-- Botón de reactivar (solo para usuarios inactivos) -->
+              <button 
+                *ngIf="!user.active" 
+                class="action-btn reactivate" 
+                title="Reactivate" 
+                (click)="reactivateUser(user)"
+              >
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </button>
             </div>
@@ -122,6 +138,163 @@
       </div>
     </footer>
   </section>
+
+   <!-- MODAL DE EDICIÓN (existente) -->
+  <div *ngIf="isEditModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Edit User</h2>
+        <button class="close-button" (click)="closeEditModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form (ngSubmit)="submitEdit()" #editForm="ngForm">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              [(ngModel)]="editedUserData.username"
+              required
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="editedUserData.email"
+              required
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="birthday">Birthday</label>
+            <input
+              type="date"
+              id="birthday"
+              name="birthday"
+              [(ngModel)]="editedUserData.birthday"
+              required
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select
+              id="role"
+              name="role"
+              [(ngModel)]="editedUserData.role"
+              required
+              class="form-input"
+            >
+              <option value="user">User</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                name="active"
+                [(ngModel)]="editedUserData.active"
+              >
+              Active User
+            </label>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button 
+          type="submit" 
+          class="btn-primary" 
+          (click)="submitEdit()"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Updating...' : 'Update User' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE ELIMINACIÓN/DESHABILITACIÓN (nuevo) -->
+  <div *ngIf="isDeleteModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Manage User</h2>
+        <button class="close-button" (click)="closeDeleteModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="warning-message">
+          <svg class="warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <p>You are about to perform an action on user: <strong>{{ deletingUser?.username }}</strong></p>
+        </div>
+
+        <div class="action-selection">
+          <div class="radio-group">
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="deleteAction"
+                value="disable"
+                [(ngModel)]="deleteAction"
+                [checked]="deleteAction === 'disable'"
+              >
+              <div class="radio-content">
+                <span class="radio-title">Disable User</span>
+                <span class="radio-description">The user will be deactivated but can be restored later. Recommended option.</span>
+              </div>
+            </label>
+
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="deleteAction"
+                value="delete"
+                [(ngModel)]="deleteAction"
+              >
+              <div class="radio-content">
+                <span class="radio-title">Delete Permanently</span>
+                <span class="radio-description">The user will be permanently deleted from the system. This action cannot be undone.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="deleteAction === 'delete'" class="danger-zone">
+          <svg class="danger-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <p><strong>Danger Zone:</strong> This action will permanently delete the user and all associated data.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+        <button 
+          type="button" 
+          class="btn-danger" 
+          (click)="confirmDeleteAction()"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Processing...' : (deleteAction === 'disable' ? 'Disable User' : 'Delete Permanently') }}
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- INFORMATION NOTE -->
   <aside class="info-note">
