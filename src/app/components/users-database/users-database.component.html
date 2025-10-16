@@ -69,12 +69,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of mockUsers">
-          <td class="user-id">#{{ user.id }}</td>
+        <tr *ngFor="let user of users">
+          <td class="user-id">#{{ user._id }}</td>
           <td>
             <div class="user-info">
-              <div class="user-avatar">{{ user.name.charAt(0) }}</div>
-              <span class="user-name">{{ user.name }}</span>
+              <div class="user-avatar">{{ user.username.charAt(0) }}</div>
+              <span class="user-name">{{ user.username }}</span>
             </div>
           </td>
           <td class="user-email">{{ user.email }}</td>
@@ -82,11 +82,11 @@
             <span class="role-badge">{{ user.role }}</span>
           </td>
           <td>
-            <span [class]="'status-badge ' + user.status.toLowerCase()">
-              {{ user.status }}
+            <span [class]="'status-badge ' + (user.active ? 'active' : 'inactive')">
+              {{ user.active ? 'Active' : 'Inactive' }}
             </span>
           </td>
-          <td class="join-date">{{ user.joined }}</td>
+          <td class="join-date">{{ user.birthday | date:'dd/MM/yyyy' }}</td>
           <td>
             <div class="action-buttons">
               <button class="action-btn view" title="View details">
@@ -113,10 +113,12 @@
 
     <!-- TABLE FOOTER WITH PAGINATION -->
     <footer class="table-footer">
-      <div class="pagination-info">Showing 1-5 of 2,547 users</div>
+      <div class="pagination-info">
+        Showing {{ pagination.skip + 1 }}-{{ pagination.skip + users.length }} of {{ pagination.total }} users
+      </div>
       <div class="pagination-controls">
-        <button class="pagination-btn" disabled>Previous</button>
-        <button class="pagination-btn active">Next</button>
+        <button class="pagination-btn" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
+        <button class="pagination-btn" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
       </div>
     </footer>
   </section>

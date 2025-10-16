@@ -43,9 +43,6 @@ export class UserService {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { username, password });
   }
 
-  loginBackoffice(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login-backoffice`, { username, password });
-  }
 
   // Users Management
   getAllUsers(skip: number = 0, limit: number = 10): Observable<UsersResponse> {
@@ -56,7 +53,7 @@ export class UserService {
     return this.http.get<UsersResponse>(this.apiUrl, { params });
   }
 
-  getAllUsersWithInactive(adminCredentials: { adminUsername: string, adminPassword: string }, skip: number = 0, limit: number = 10): Observable<UsersResponse> {
+  getAllUsersWithInactive(adminCredentials: { adminUsername: string, adminPassword: string }, skip: number = 0, limit: number = 5): Observable<UsersResponse> {
     const params = new HttpParams()
       .set('skip', skip.toString())
       .set('limit', limit.toString());
