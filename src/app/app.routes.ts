@@ -5,6 +5,7 @@ import { UsersDatabaseComponent } from './components/users-database/users-databa
 import { ConnectedUsersComponent } from './components/connected-users/connected-users.component';
 import { OrganizedEventsComponent } from './components/organized-events/organized-events.component';
 import { BusinessComponent } from './components/business/business.component'; 
+import { BusinessListComponent } from './components/business-list/business-list.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -12,7 +13,8 @@ export const routes: Routes = [
   { path: 'users', component: UsersDatabaseComponent },
   { path: 'connected-users', component: ConnectedUsersComponent },
   { path: 'organized-events', component: OrganizedEventsComponent },
-  { path: 'register-business', component: BusinessComponent }, // ✅ Nueva ruta
+  { path: 'register-business', component: BusinessComponent }, 
+  { path: 'business-list', component: BusinessListComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

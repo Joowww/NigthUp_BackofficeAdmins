@@ -1,0 +1,88 @@
+<div class="business-list-container">
+  <h1 class="title">Encuentra la diversión cerca de ti 🎉</h1>
+  <p class="subtitle">Descubre bares, discotecas y eventos destacados</p>
+
+  <!-- Buscador -->
+  <div class="search-bar">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Buscar por nombre, dirección o email..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange($event)"
+    />
+  </div>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="loading" class="loading">
+    <span class="spinner"></span> Cargando negocios...
+  </div>
+
+  <!-- No hay negocios registrados -->
+  <div *ngIf="!loading && businesses.length === 0" class="no-results">
+    No hay negocios registrados en la base de datos.
+  </div>
+
+  <!-- No hay coincidencias con la búsqueda -->
+  <div *ngIf="!loading && businesses.length > 0 && filteredBusinesses.length === 0" class="no-results">
+    No se encontraron resultados.
+  </div>
+
+  <!-- Tarjetas de negocios -->
+  <div class="cards-container" *ngIf="!loading && filteredBusinesses.length > 0">
+    <div
+      *ngFor="let business of filteredBusinesses"
+      class="business-card"
+      [class.expanded]="expandedBusinessId === business._id"
+      (click)="toggleExpand(business._id!)"
+    >
+      <!-- Encabezado -->
+      <div class="card-header">
+        <div class="business-name" [innerHTML]="highlightMatch(business.name)"></div>
+        <span class="badge" [ngClass]="business.active ? 'active' : 'inactive'">
+          {{ business.active ? 'Activo' : 'Inactivo' }}
+        </span>
+      </div>
+
+      <!-- Información general -->
+      <div class="card-body">
+        <p *ngIf="business.address">📍 <span [innerHTML]="highlightMatch(business.address)"></span></p>
+        <p *ngIf="business.phone">📞 {{ business.phone }}</p>
+        <p *ngIf="business.email">✉️ <span [innerHTML]="highlightMatch(business.email)"></span></p>
+      </div>
+
+      <!-- Información detallada expandida -->
+      <div class="card-details" *ngIf="expandedBusinessId === business._id">
+        <hr />
+        <h4>Detalles del negocio</h4>
+        <p><strong>CIF:</strong> {{ business._id }}</p>
+        <p *ngIf="business.managers?.length">
+          <strong>Managers:</strong> {{ (business.managers ?? []).join(', ') }}
+        </p>
+
+        <div *ngIf="business.eventos?.length">
+          <strong>Eventos:</strong>
+          <ul>
+            <li *ngFor="let event of business.eventos">
+              {{ event.name }}
+              <span *ngIf="event.schedule">
+                —
+                <span *ngFor="let s of toArray(event.schedule); let i = index">
+                  {{ s | date:'shortDate' }}
+                  <span *ngIf="i < toArray(event.schedule).length - 1">, </span>
+                </span>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Botón de acción -->
+      <div class="card-footer">
+        <button class="view-btn">
+          {{ expandedBusinessId === business._id ? 'Cerrar' : 'Ver más' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
