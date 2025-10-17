@@ -42,7 +42,9 @@ export class UserService {
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { username, password });
   }
-
+  loginBackoffice(username: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/backoffice-login`, { username, password });
+  }
 
   // Users Management
   getAllUsers(skip: number = 0, limit: number = 10): Observable<UsersResponse> {

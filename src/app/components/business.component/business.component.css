@@ -1,0 +1,189 @@
+/* 🎨 Contenedor general con fondo oscuro tipo login */
+.business-container {
+    min-height: 100vh;
+    background-color: #0f1419;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* 🔵 Efectos de luces de fondo (como en el login) */
+  .background-decoration {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(48px);
+  }
+  
+  .bg-circle-1 {
+    top: 0;
+    left: 25%;
+    width: 384px;
+    height: 384px;
+    background-color: rgba(59, 130, 246, 0.05);
+  }
+  
+  .bg-circle-2 {
+    bottom: 0;
+    right: 25%;
+    width: 384px;
+    height: 384px;
+    background-color: rgba(139, 92, 246, 0.05);
+  }
+  
+  /* 🧾 Tarjeta del formulario */
+  .business-card {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    background-color: #1a1f28;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+  }
+  
+  /* 🔖 Encabezado */
+  .form-header {
+    padding: 32px 32px 24px;
+    border-bottom: 1px solid #374151;
+    text-align: center;
+  }
+  
+  .form-header h2 {
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  
+  .form-header p {
+    font-size: 14px;
+    color: #9ca3af;
+  }
+  
+  /* 🧩 Formulario */
+  .business-form {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* 📋 Campos */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .field-label {
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #0f1419;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .form-input::placeholder {
+    color: #6b7280;
+  }
+  
+  /* ❗ Mensajes de error */
+  .error {
+    font-size: 13px;
+    color: #ef4444;
+    margin-top: 4px;
+  }
+  
+  /* ✅ Mensajes de éxito */
+  .success-message {
+    background-color: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  /* 🔵 Botón principal */
+  .submit-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #2563eb;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .submit-btn:hover {
+    background-color: #1d4ed8;
+  }
+  
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* 🌀 Animación ligera en hover */
+  .submit-btn:hover .button-icon {
+    transform: translateX(4px);
+  }
+  
+  /* 📱 Responsividad */
+  @media (max-width: 480px) {
+    .business-card {
+      max-width: 90%;
+    }
+  
+    .form-header {
+      padding: 24px 16px;
+    }
+  
+    .business-form {
+      padding: 24px 16px;
+    }
+  }
+  

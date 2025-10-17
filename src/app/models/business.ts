@@ -1,6 +1,6 @@
 import { Event } from './event';
 
-export interface IBussines {
+export interface IBusiness {
   _id?: string;//CIF
   name: string;
   address?: string;

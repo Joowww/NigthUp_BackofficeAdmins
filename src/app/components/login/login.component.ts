@@ -25,6 +25,14 @@ export class LoginComponent {
   // Mensaje de error
   loginError: string = '';
 
+
+  isBusinessLogin: boolean = false; // Por defecto: login normal
+
+  toggleBusinessLogin() {
+    this.isBusinessLogin = !this.isBusinessLogin;
+  }
+
+
   constructor(private router: Router, private userService: UserService) {} // Inyecta el servicio
 
   togglePasswordVisibility(): void {

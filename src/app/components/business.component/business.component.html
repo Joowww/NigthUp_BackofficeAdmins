@@ -1,0 +1,66 @@
+<div class="business-container">
+    <div class="background-decoration">
+      <div class="bg-circle bg-circle-1"></div>
+      <div class="bg-circle bg-circle-2"></div>
+    </div>
+  
+    <div class="business-card">
+      <div class="form-header">
+        <h2>Registrar Negocio</h2>
+        <p>Introduce los datos del nuevo establecimiento</p>
+      </div>
+  
+      <form [formGroup]="businessForm" (ngSubmit)="onSubmit()" class="business-form">
+        <div class="form-group">
+          <label class="field-label" for="name">Nombre del negocio *</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Ej. Bar Nocturno XYZ"
+            class="form-input"
+          />
+          <div class="error" *ngIf="f['name'].touched && f['name'].invalid">
+            <small *ngIf="f['name'].errors?.['required']">El nombre es obligatorio.</small>
+            <small *ngIf="f['name'].errors?.['minlength']">Debe tener al menos 3 caracteres.</small>
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label class="field-label" for="address">Dirección</label>
+          <input id="address" type="text" formControlName="address" placeholder="Calle, Ciudad..." class="form-input" />
+        </div>
+  
+        <div class="form-group">
+          <label class="field-label" for="phone">Teléfono</label>
+          <input id="phone" type="text" formControlName="phone" placeholder="Ej. 987654321" class="form-input" />
+          <div class="error" *ngIf="f['phone'].touched && f['phone'].invalid">
+            <small>Debe ser un número válido.</small>
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label class="field-label" for="email">Correo electrónico *</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="ejemplo@negocio.com"
+            class="form-input"
+          />
+          <div class="error" *ngIf="f['email'].touched && f['email'].invalid">
+            <small *ngIf="f['email'].errors?.['required']">El correo es obligatorio.</small>
+            <small *ngIf="f['email'].errors?.['email']">Formato inválido.</small>
+          </div>
+        </div>
+  
+        <button type="submit" [disabled]="isSubmitting || businessForm.invalid" class="submit-btn">
+          {{ isSubmitting ? 'Registrando...' : 'Registrar Negocio' }}
+        </button>
+  
+        <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
+        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+      </form>
+    </div>
+  </div>
+  
