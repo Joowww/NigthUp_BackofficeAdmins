@@ -4,7 +4,7 @@ import { HomeComponent } from './components/home/home.component';
 import { UsersDatabaseComponent } from './components/users-database/users-database.component';
 import { ConnectedUsersComponent } from './components/connected-users/connected-users.component';
 import { OrganizedEventsComponent } from './components/organized-events/organized-events.component';
-import { BusinessComponent } from './components/business.component/business.component'; 
+import { BusinessComponent } from './components/business/business.component'; 
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
