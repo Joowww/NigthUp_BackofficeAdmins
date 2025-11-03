@@ -45,7 +45,7 @@ export class UserService {
 
 
   // Users Management
-  getAllUsers(skip: number = 0, limit: number = 10): Observable<UsersResponse> {
+  getAllUsers(skip: number = 0, limit: number = 5): Observable<UsersResponse> {
     const params = new HttpParams()
       .set('skip', skip.toString())
       .set('limit', limit.toString());
@@ -53,13 +53,13 @@ export class UserService {
     return this.http.get<UsersResponse>(this.apiUrl, { params });
   }
 
-  getAllUsersWithInactive(adminCredentials: { adminUsername: string, adminPassword: string }, skip: number = 0, limit: number = 5): Observable<UsersResponse> {
+  getAllUsersWithInactive( skip: number = 0, limit: number = 5): Observable<UsersResponse> {
     const params = new HttpParams()
       .set('skip', skip.toString())
       .set('limit', limit.toString());
     
     // CORREGIDO: Usar POST en lugar de GET con body
-    return this.http.post<UsersResponse>(`${this.apiUrl}/all/inactive-included`, adminCredentials, { params });
+    return this.http.get<UsersResponse>(`${this.apiUrl}/with-inactive`, { params });
   }
 
   getUserById(id: string): Observable<User> {
@@ -88,11 +88,11 @@ export class UserService {
   }
 
   makeUserAdmin(id: string, adminCredentials: { adminUsername: string, adminPassword: string }): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/make-admin`, adminCredentials);
+    return this.http.patch(`${this.apiUrl}/${id}/make-admin`, adminCredentials);
   }
 
   removeUserAdmin(id: string, adminCredentials: { adminUsername: string, adminPassword: string }): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/remove-admin`, adminCredentials);
+    return this.http.patch(`${this.apiUrl}/${id}/remove-admin`, adminCredentials);
   }
 
   // Admin User Creation

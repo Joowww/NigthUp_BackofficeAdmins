@@ -53,11 +53,11 @@ export class EventService {
       .set('skip', skip.toString())
       .set('limit', limit.toString());
     
-    return this.http.get<EventsResponse>(`${this.apiUrl}/all/inactive-included`, { params });
+    return this.http.get<EventsResponse>(`${this.apiUrl}/all/with-inactive`, { params });
   }
 
   disableEvent(id: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, {});
+    return this.http.put(`${this.apiUrl}/${id}/disable`, {});
   }
 
   reactivateEvent(id: string): Observable<any> {
@@ -69,6 +69,6 @@ export class EventService {
   }
 
   updateEvent(id: string, event: Partial<Event>): Observable<Event> {
-    return this.http.put<Event>(`${this.apiUrl}/${id}`, event);
+    return this.http.patch<Event>(`${this.apiUrl}/${id}`, event);
   }
 }

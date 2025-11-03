@@ -29,16 +29,20 @@ export class UsersDatabaseComponent {
     this.loadUsers();
   }
 
-  loadUsers(skip: number = 0): void {
+  loadUsers(skip: number = this.pagination.skip): void {
     this.loading = true;
-    this.userService.getAllUsers(skip, this.pagination.limit)
+    this.userService.getAllUsersWithInactive(skip, this.pagination.limit)
       .subscribe({
         next: (res: UsersResponse) => {
           this.users = res.users;
-          this.pagination = res.pagination;
+          this.pagination = {
+            ...res.pagination,
+            skip: skip // Asegurar que skip se actualice
+          };
           this.loading = false;
         },
-        error: () => {
+        error: (error) => {
+          console.error('Error loading users:', error);
           this.loading = false;
         }
       });

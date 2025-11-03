@@ -23,7 +23,7 @@ export class AuthService {
 
   login(username: string, password: string, isBackoffice: boolean = false): Observable<LoginResponse> {
     const loginObservable = isBackoffice 
-      ? this.userService.loginBackoffice(username, password)
+      ? this.userService.login(username, password)
       : this.userService.login(username, password);
 
     return new Observable(observer => {
