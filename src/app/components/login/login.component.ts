@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service'; // Importa el servicio
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +25,7 @@ export class LoginComponent {
   // Mensaje de error
   loginError: string = '';
 
-  constructor(private router: Router, private userService: UserService) {} // Inyecta el servicio
+  constructor(private router: Router, private userService: UserService) {}
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -36,6 +36,9 @@ export class LoginComponent {
     this.userService.login(this.username, this.password).subscribe({
       next: (res) => {
         if (res.user && res.user.role === 'admin') {
+          // ✅ SOLO AGREGA ESTA LÍNEA - Guardar el usuario en el servicio
+          this.userService.setCurrentUser(res.user);
+          
           this.router.navigate(['/home']);
         } else {
           this.loginError = 'Acceso denegado: solo administradores pueden entrar.';

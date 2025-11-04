@@ -6,7 +6,7 @@
       <p class="page-subtitle">Manage and monitor all platform events</p>
     </div>
     <div class="header-controls">
-      <button class="create-button">
+      <button class="create-button" (click)="openCreateModal()">
         <svg class="create-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -27,7 +27,7 @@
     </div>
   </header>
 
-  <!-- STATS -->
+  <!-- STATS CON DATOS REALES -->
   <section class="stats-cards">
     <div class="stat-card">
       <div class="stat-header">
@@ -38,8 +38,8 @@
           </svg>
         </div>
       </div>
-      <div class="stat-value">84</div>
-      <div class="stat-description positive">+8 this week</div>
+      <div class="stat-value">{{ eventStats.total }}</div>
+      <div class="stat-description">All platform events</div>
     </div>
 
     <div class="stat-card">
@@ -51,8 +51,8 @@
           </svg>
         </div>
       </div>
-      <div class="stat-value">50</div>
-      <div class="stat-description">59.5% of total</div>
+      <div class="stat-value">{{ eventStats.active }}</div>
+      <div class="stat-description">{{ eventStats.total > 0 ? (eventStats.active / eventStats.total * 100 | number:'1.0-0') + '% of total' : '0% of total' }}</div>
     </div>
 
     <div class="stat-card">
@@ -64,8 +64,8 @@
           </svg>
         </div>
       </div>
-      <div class="stat-value">1,778</div>
-      <div class="stat-description positive">+156 today</div>
+      <div class="stat-value">{{ eventStats.attendees }}</div>
+      <div class="stat-description">Across all events</div>
     </div>
 
     <div class="stat-card">
@@ -77,14 +77,24 @@
           </svg>
         </div>
       </div>
-      <div class="stat-value">65%</div>
+      <div class="stat-value">{{ eventStats.attendanceRate }}%</div>
       <div class="stat-description">Capacity filled</div>
     </div>
   </section>
 
+  <!-- LOADING STATE -->
+  <div *ngIf="loading" class="info-note">
+    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <div class="info-text">
+      Loading events...
+    </div>
+  </div>
+
   <!-- EVENTS GRID VIEW -->
-  <div *ngIf="viewMode === 'grid'" class="events-grid">
-    <div *ngFor="let event of mockEvents" class="event-card">
+  <div *ngIf="viewMode === 'grid' && !loading" class="events-grid">
+    <div *ngFor="let event of events" class="event-card">
       <div class="event-header">
         <div class="event-info">
           <h3 class="event-name">{{ event.name }}</h3>
@@ -92,10 +102,10 @@
             <svg class="venue-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             </svg>
-            {{ event.venue }}
+            {{ event.location }}
           </div>
         </div>
-        <span [class]="'status-badge ' + event.status.toLowerCase()">{{ event.status }}</span>
+        <span [class]="'status-badge ' + getEventStatus(event).toLowerCase()">{{ getEventStatus(event) }}</span>
       </div>
 
       <div class="event-details">
@@ -103,29 +113,35 @@
           <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          {{ event.date }} at {{ event.time }}
+          {{ formatDate(event.schedule) }}
         </div>
         <div class="detail-item">
           <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
-          {{ event.organizer }}
+          {{ event.category }}
+        </div>
+        <div class="detail-item">
+          <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+          </svg>
+          ${{ event.price }}
         </div>
       </div>
 
       <div class="attendance-section">
         <div class="attendance-header">
           <span class="attendance-label">Attendance</span>
-          <span class="attendance-value">{{ event.attendees }} / {{ event.capacity }}</span>
+          <span class="attendance-value">{{ event.participants?.length || 0 }} / {{ event.capacity }}</span>
         </div>
         <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="(event.attendees / event.capacity) * 100"></div>
+          <div class="progress-fill" [style.width.%]="getAttendancePercentage(event)"></div>
         </div>
       </div>
 
       <div class="event-actions">
-        <button class="action-btn primary">View Details</button>
-        <button class="action-btn secondary">
+        <button class="action-btn primary" (click)="openViewModal(event)">View Details</button>
+        <button class="action-btn secondary" (click)="openEditModal(event)">
           <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
@@ -135,52 +151,47 @@
   </div>
 
   <!-- EVENTS TABLE VIEW -->
-  <div *ngIf="viewMode === 'list'" class="events-table-container">
+  <div *ngIf="viewMode === 'list' && !loading" class="events-table-container">
     <table class="events-table">
       <thead>
         <tr>
           <th>Event Name</th>
-          <th>Venue</th>
+          <th>Location</th>
           <th>Date & Time</th>
-          <th>Organizer</th>
+          <th>Category</th>
           <th>Attendance</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let event of mockEvents">
+        <tr *ngFor="let event of events">
           <td class="event-name">{{ event.name }}</td>
-          <td class="event-venue">{{ event.venue }}</td>
-          <td class="event-datetime">{{ event.date }} {{ event.time }}</td>
-          <td class="event-organizer">{{ event.organizer }}</td>
+          <td class="event-venue">{{ event.location }}</td>
+          <td class="event-datetime">{{ formatDate(event.schedule) }}</td>
+          <td class="event-organizer">{{ event.category }}</td>
           <td>
             <div class="attendance-display">
               <div class="progress-bar-small">
-                <div class="progress-fill" [style.width.%]="(event.attendees / event.capacity) * 100"></div>
+                <div class="progress-fill" [style.width.%]="getAttendancePercentage(event)"></div>
               </div>
-              <span class="attendance-text">{{ event.attendees }}/{{ event.capacity }}</span>
+              <span class="attendance-text">{{ event.participants?.length || 0 }}/{{ event.capacity }}</span>
             </div>
           </td>
           <td>
-            <span [class]="'status-badge ' + event.status.toLowerCase()">{{ event.status }}</span>
+            <span [class]="'status-badge ' + getEventStatus(event).toLowerCase()">{{ getEventStatus(event) }}</span>
           </td>
           <td>
             <div class="action-buttons">
-              <button class="action-btn-table" title="View">
+              <button class="action-btn-table view" title="View" (click)="openViewModal(event)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </button>
-              <button class="action-btn-table" title="Edit">
+              <button class="action-btn-table edit" title="Edit" (click)="openEditModal(event)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-              <button class="action-btn-table" title="Delete">
-                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </button>
             </div>
@@ -190,13 +201,196 @@
     </table>
   </div>
 
-  <!-- INFO NOTE -->
-  <div class="info-note">
+  <!-- NO EVENTS MESSAGE -->
+  <div *ngIf="events.length === 0 && !loading" class="info-note">
     <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <div class="info-text">
-      This table uses example data. You can replace the data with your own database logic.
+      No events found. Create your first event using the "Create Event" button above.
+    </div>
+  </div>
+
+  <!-- MODAL CREAR EVENTO -->
+  <div *ngIf="isCreateModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Create New Event</h2>
+        <button class="close-button" (click)="closeCreateModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form (ngSubmit)="submitCreate()" #createForm="ngForm">
+          <div class="form-group">
+            <label for="name">Event Name *</label>
+            <input type="text" id="name" name="name" [(ngModel)]="newEventData.name" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="schedule">Date & Time *</label>
+            <input type="datetime-local" id="schedule" name="schedule" [(ngModel)]="newEventData.schedule" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="location">Location *</label>
+            <input type="text" id="location" name="location" [(ngModel)]="newEventData.location" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea id="description" name="description" [(ngModel)]="newEventData.description" required class="form-input" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <input type="text" id="category" name="category" [(ngModel)]="newEventData.category" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="capacity">Capacity</label>
+            <input type="number" id="capacity" name="capacity" [(ngModel)]="newEventData.capacity" class="form-input" min="1">
+          </div>
+
+          <div class="form-group">
+            <label for="price">Price ($)</label>
+            <input type="number" id="price" name="price" [(ngModel)]="newEventData.price" class="form-input" min="0" step="0.01">
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="submitCreate()" [disabled]="loading">
+          {{ loading ? 'Creating...' : 'Create Event' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR EVENTO -->
+  <div *ngIf="isEditModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Edit Event</h2>
+        <button class="close-button" (click)="closeEditModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form (ngSubmit)="submitEdit()" #editForm="ngForm">
+          <div class="form-group">
+            <label for="editName">Event Name *</label>
+            <input type="text" id="editName" name="editName" [(ngModel)]="editedEventData.name" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="editSchedule">Date & Time *</label>
+            <input type="datetime-local" id="editSchedule" name="editSchedule" [(ngModel)]="editedEventData.schedule" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="editLocation">Location *</label>
+            <input type="text" id="editLocation" name="editLocation" [(ngModel)]="editedEventData.location" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="editDescription">Description *</label>
+            <textarea id="editDescription" name="editDescription" [(ngModel)]="editedEventData.description" required class="form-input" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="editCategory">Category *</label>
+            <input type="text" id="editCategory" name="editCategory" [(ngModel)]="editedEventData.category" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="editCapacity">Capacity</label>
+            <input type="number" id="editCapacity" name="editCapacity" [(ngModel)]="editedEventData.capacity" class="form-input" min="1">
+          </div>
+
+          <div class="form-group">
+            <label for="editPrice">Price ($)</label>
+            <input type="number" id="editPrice" name="editPrice" [(ngModel)]="editedEventData.price" class="form-input" min="0" step="0.01">
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="editActive" [(ngModel)]="editedEventData.active">
+              Active Event
+            </label>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="submitEdit()" [disabled]="loading">
+          {{ loading ? 'Updating...' : 'Update Event' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER DETALLES -->
+  <div *ngIf="isViewModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Event Details</h2>
+        <button class="close-button" (click)="closeViewModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedEvent">
+        <div class="user-details">
+          <div class="detail-row">
+            <span class="detail-label">Event Name:</span>
+            <span class="detail-value">{{ selectedEvent.name }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Date & Time:</span>
+            <span class="detail-value">{{ formatDate(selectedEvent.schedule) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value">{{ selectedEvent.location }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Description:</span>
+            <span class="detail-value">{{ selectedEvent.description }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Category:</span>
+            <span class="detail-value">{{ selectedEvent.category }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Capacity:</span>
+            <span class="detail-value">{{ selectedEvent.capacity }} people</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Price:</span>
+            <span class="detail-value">${{ selectedEvent.price }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Participants:</span>
+            <span class="detail-value">{{ selectedEvent.participants?.length || 0 }} registered</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span [class]="'detail-value status-badge ' + getEventStatus(selectedEvent).toLowerCase()">
+              {{ getEventStatus(selectedEvent) }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Attendance Rate:</span>
+            <span class="detail-value">{{ getAttendancePercentage(selectedEvent) }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeViewModal()">Close</button>
+        <button type="button" class="btn-primary" (click)="openEditModal(selectedEvent!)" *ngIf="selectedEvent">
+          Edit Event
+        </button>
+      </div>
     </div>
   </div>
 </div>

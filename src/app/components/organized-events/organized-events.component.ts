@@ -1,60 +1,260 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EventService, Event } from '../../services/event.service';
 
 @Component({
   selector: 'app-organized-events',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './organized-events.component.html',
   styleUrls: ['./organized-events.component.css']
 })
-export class OrganizedEventsComponent {
+export class OrganizedEventsComponent implements OnInit {
   viewMode: 'grid' | 'list' = 'grid';
+  events: Event[] = [];
+  loading = false;
 
-  mockEvents = [
-    { 
-      id: 1, 
-      name: 'Neon Nights Party', 
-      venue: 'Club Noctis', 
-      date: '2024-10-15', 
-      time: '22:00', 
-      attendees: 245, 
-      capacity: 500,
-      status: 'Active',
-      organizer: 'Maria Garcia'
-    },
-    { 
-      id: 2, 
-      name: 'Techno Underground', 
-      venue: 'The Warehouse', 
-      date: '2024-10-18', 
-      time: '23:00', 
-      attendees: 189, 
-      capacity: 300,
-      status: 'Active',
-      organizer: 'DJ Master'
-    },
-    { 
-      id: 3, 
-      name: 'Latin Vibes Night', 
-      venue: 'Salsa Club', 
-      date: '2024-10-20', 
-      time: '21:00', 
-      attendees: 412, 
-      capacity: 600,
-      status: 'Active',
-      organizer: 'Carlos Lopez'
-    },
-    { 
-      id: 4, 
-      name: 'House Music Session', 
-      venue: 'Rhythm Bar', 
-      date: '2024-10-12', 
-      time: '22:30', 
-      attendees: 156, 
-      capacity: 200,
-      status: 'Completed',
-      organizer: 'Ana Martinez'
-    },
-  ];
+  // Variables para estadísticas reales
+  eventStats = {
+    total: 0,
+    active: 0,
+    attendees: 0,
+    attendanceRate: 0
+  };
+
+  // Variables para modales
+  isCreateModalOpen = false;
+  isEditModalOpen = false;
+  isViewModalOpen = false;
+  selectedEvent: Event | null = null;
+  
+  // Datos para formularios
+  newEventData: Partial<Event> = {
+    name: '',
+    schedule: '',
+    location: '',
+    description: '',
+    category: '',
+    capacity: 100,
+    price: 0,
+    active: true
+  };
+
+  editedEventData: Partial<Event> = {};
+
+  constructor(private eventService: EventService) {}
+
+  ngOnInit(): void {
+    this.loadEvents();
+    this.calculateStats();
+  }
+
+  // ✅ Cargar eventos reales desde la BD
+  loadEvents(): void {
+    this.loading = true;
+    this.eventService.getAllEventsWithInactive(0, 50).subscribe({
+      next: (response) => {
+        this.events = response.events;
+        this.calculateStats();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading events:', error);
+        this.loading = false;
+        alert('Error loading events: ' + (error.error?.message || 'Unknown error'));
+      }
+    });
+  }
+
+  // ✅ Calcular estadísticas reales
+  calculateStats(): void {
+    this.eventStats.total = this.events.length;
+    this.eventStats.active = this.events.filter(event => event.active).length;
+    
+    // Calcular total de asistentes
+    this.eventStats.attendees = this.events.reduce((total, event) => 
+      total + (event.participants?.length || 0), 0
+    );
+    
+    // Calcular tasa de asistencia promedio
+    const totalCapacity = this.events.reduce((total, event) => total + (event.capacity || 0), 0);
+    this.eventStats.attendanceRate = totalCapacity > 0 ? 
+      Math.round((this.eventStats.attendees / totalCapacity) * 100) : 0;
+  }
+
+  // ✅ MODALES PARA CREAR EVENTO
+  openCreateModal(): void {
+    this.newEventData = {
+      name: '',
+      schedule: '',
+      location: '',
+      description: '',
+      category: '',
+      capacity: 100,
+      price: 0,
+      active: true
+    };
+    this.isCreateModalOpen = true;
+  }
+
+  closeCreateModal(): void {
+    this.isCreateModalOpen = false;
+    this.newEventData = {};
+  }
+
+  submitCreate(): void {
+    if (!this.validateEventData(this.newEventData)) return;
+
+    this.loading = true;
+    this.eventService.createEvent(this.newEventData).subscribe({
+      next: (event) => {
+        this.events.unshift(event); // Agregar al inicio
+        this.calculateStats();
+        this.closeCreateModal();
+        this.loading = false;
+        alert('Event created successfully!');
+      },
+      error: (error) => {
+        console.error('Error creating event:', error);
+        this.loading = false;
+        
+        let errorMessage = 'Error creating event: ';
+        if (error.status === 403) {
+          errorMessage += 'Admin privileges required. Only administrators can create events.';
+        } else if (error.status === 401) {
+          errorMessage += 'You are not authorized. Please login again.';
+        } else {
+          errorMessage += error.error?.message || 'Unknown error';
+        }
+        
+        alert(errorMessage);
+      }
+    });
+  }
+
+  // ✅ MODALES PARA EDITAR EVENTO
+  openEditModal(event: Event): void {
+    this.selectedEvent = event;
+    this.editedEventData = {
+      name: event.name,
+      schedule: this.formatDateForInput(event.schedule),
+      location: event.location,
+      description: event.description,
+      category: event.category,
+      capacity: event.capacity,
+      price: event.price,
+      active: event.active
+    };
+    this.isEditModalOpen = true;
+  }
+
+  closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.selectedEvent = null;
+    this.editedEventData = {};
+  }
+
+  submitEdit(): void {
+    if (!this.selectedEvent || !this.selectedEvent._id) return;
+    if (!this.validateEventData(this.editedEventData)) return;
+
+    this.loading = true;
+    this.eventService.updateEvent(this.selectedEvent._id, this.editedEventData).subscribe({
+      next: (updatedEvent) => {
+        // Actualizar en la lista local
+        const index = this.events.findIndex(e => e._id === this.selectedEvent!._id);
+        if (index !== -1) {
+          this.events[index] = { ...this.events[index], ...updatedEvent };
+        }
+        this.calculateStats();
+        this.closeEditModal();
+        this.loading = false;
+        alert('Event updated successfully!');
+      },
+      error: (error) => {
+        console.error('Error updating event:', error);
+        this.loading = false;
+        
+        let errorMessage = 'Error updating event: ';
+        if (error.status === 403) {
+          errorMessage += 'Admin or manager privileges required.';
+        } else if (error.status === 401) {
+          errorMessage += 'You are not authorized. Please login again.';
+        } else {
+          errorMessage += error.error?.message || 'Unknown error';
+        }
+        
+        alert(errorMessage);
+      }
+    });
+  }
+
+  // ✅ MODAL PARA VER DETALLES
+  openViewModal(event: Event): void {
+    this.selectedEvent = event;
+    this.isViewModalOpen = true;
+  }
+
+  closeViewModal(): void {
+    this.isViewModalOpen = false;
+    this.selectedEvent = null;
+  }
+
+  // ✅ VALIDACIÓN DE DATOS
+  private validateEventData(eventData: Partial<Event>): boolean {
+    if (!eventData.name || !eventData.schedule || !eventData.location || 
+        !eventData.description || !eventData.category) {
+      alert('Please fill all required fields: Name, Schedule, Location, Description, Category');
+      return false;
+    }
+    return true;
+  }
+
+  // ✅ FORMATEO DE FECHAS PARA DISPLAY
+  formatDate(dateString: string): string {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return 'Invalid Date';
+    }
+  }
+
+  // ✅ FORMATEO DE FECHAS PARA INPUT
+  formatDateForInput(dateString: string): string {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      // Formato para input datetime-local: YYYY-MM-DDTHH:mm
+      return date.toISOString().slice(0, 16);
+    } catch {
+      return '';
+    }
+  }
+
+  // ✅ CALCULAR PORCENTAJE DE ASISTENCIA
+  getAttendancePercentage(event: Event): number {
+    const participants = event.participants?.length || 0;
+    const capacity = event.capacity || 1;
+    return Math.round((participants / capacity) * 100);
+  }
+
+  // ✅ OBTENER ESTADO DEL EVENTO
+  getEventStatus(event: Event): string {
+    if (!event.active) return 'Cancelled';
+    
+    const eventDate = new Date(event.schedule);
+    const now = new Date();
+    
+    if (eventDate < now) return 'Completed';
+    return 'Active';
+  }
 }
