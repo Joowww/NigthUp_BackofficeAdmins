@@ -5,13 +5,7 @@
       <h1 class="page-title">Organized Events</h1>
       <p class="page-subtitle">Manage and monitor all platform events</p>
     </div>
-    <div class="header-controls">
-      <button class="create-button" (click)="openCreateModal()">
-        <svg class="create-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Create Event
-      </button>
+    <div class="header-controls-flex">
       <div class="view-toggle">
         <button (click)="viewMode = 'grid'" [class.active]="viewMode === 'grid'" class="view-btn">
           <svg class="view-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,6 +18,14 @@
           </svg>
         </button>
       </div>
+      <button class="btn-primary create-event-btn" (click)="openCreateModal()">
+        <span class="create-event-content">
+          <svg class="create-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <span class="create-event-text">Create Event</span>
+        </span>
+      </button>
     </div>
   </header>
 
@@ -132,7 +134,7 @@
       <div class="attendance-section">
         <div class="attendance-header">
           <span class="attendance-label">Attendance</span>
-          <span class="attendance-value">{{ event.participants?.length || 0 }} / {{ event.capacity }}</span>
+          <span class="attendance-value">{{ event.participants.length || 0 }} / {{ event.capacity }}</span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" [style.width.%]="getAttendancePercentage(event)"></div>
@@ -149,6 +151,17 @@
       </div>
     </div>
   </div>
+
+    <!-- PAGINATION FOOTER -->
+    <footer class="table-footer" *ngIf="!loading && events.length > 0">
+      <div class="pagination-info">
+        Showing {{ pagination.skip + 1 }} - {{ pagination.skip + events.length }} of {{ pagination.total }} events
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
+        <button class="pagination-btn" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
+      </div>
+    </footer>
 
   <!-- EVENTS TABLE VIEW -->
   <div *ngIf="viewMode === 'list' && !loading" class="events-table-container">
@@ -175,7 +188,7 @@
               <div class="progress-bar-small">
                 <div class="progress-fill" [style.width.%]="getAttendancePercentage(event)"></div>
               </div>
-              <span class="attendance-text">{{ event.participants?.length || 0 }}/{{ event.capacity }}</span>
+              <span class="attendance-text">{{ event.participants.length || 0 }}/{{ event.capacity }}</span>
             </div>
           </td>
           <td>
@@ -370,7 +383,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Participants:</span>
-            <span class="detail-value">{{ selectedEvent.participants?.length || 0 }} registered</span>
+            <span class="detail-value">{{ selectedEvent.participants.length || 0 }} registered</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Status:</span>

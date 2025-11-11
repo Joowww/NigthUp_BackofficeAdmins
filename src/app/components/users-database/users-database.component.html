@@ -23,18 +23,19 @@
     </div>
     
     <!-- ✅ NUEVO: Filtros de rol y estado -->
-    <select [(ngModel)]="roleFilter" (change)="applyFilters()" class="filter-select">
-      <option value="all">All Roles</option>
-      <option value="admin">Admin</option>
-      <option value="manager">Manager</option>
-      <option value="user">User</option>
-    </select>
-
-    <select [(ngModel)]="statusFilter" (change)="applyFilters()" class="filter-select">
-      <option value="all">All Status</option>
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
+    <div class="filter-button-group">
+      <select [(ngModel)]="roleFilter" (change)="applyFilters()" class="filter-select export-button">
+        <option value="all">All Roles</option>
+        <option value="admin">Admin</option>
+        <option value="manager">Manager</option>
+        <option value="user">User</option>
+      </select>
+      <select [(ngModel)]="statusFilter" (change)="applyFilters()" class="filter-select export-button">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
 
     <button class="export-button" (click)="exportToCSV()">
       <svg class="export-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,7 +242,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Events Registered:</span>
-            <span class="detail-value">{{ viewingUser.events?.length || 0 }} events</span>
+            <span class="detail-value">{{ viewingUser.events.length || 0 }} events</span>
           </div>
         </div>
       </div>

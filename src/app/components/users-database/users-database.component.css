@@ -1,3 +1,23 @@
+/* Agrupa los filtros para que se vean como botones */
+.filter-button-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.filter-select.export-button {
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.filter-select.export-button:focus,
+.filter-select.export-button:hover {
+  background: #1d4ed8;
+}
 /* ===== MAIN CONTAINER ===== */
 .page-container {
   padding: 2.5rem; /* Consistent with home component */

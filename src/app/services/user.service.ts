@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
@@ -27,7 +27,13 @@ export interface UsersResponse {
 export interface LoginResponse {
   message: string;
   user: User;
-  isAdmin?: boolean;
+  token: string;
+  refreshToken?: string;
+}
+
+export interface RefreshTokenResponse {
+  message: string;
+  token: string;
 }
 
 export interface UserStats {
@@ -57,6 +63,17 @@ export class UserService {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { username, password });
   }
 
+  refreshToken(refreshToken: string, userId: string): Observable<RefreshTokenResponse> {
+    return this.http.post<RefreshTokenResponse>(`${this.apiUrl}/auth/refresh`, {
+      refreshToken,
+      userId
+    });
+  }
+
+  verifyToken(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/verify`);
+  }
+
   setCurrentUser(user: User): void {
     this.currentUser = user;
     localStorage.setItem('currentUser', JSON.stringify(user));
@@ -64,14 +81,6 @@ export class UserService {
 
   getCurrentUser(): User | null {
     return this.currentUser;
-  }
-
-  // Crear headers con el rol del usuario
-  private getAuthHeaders(): HttpHeaders {
-    const role = this.currentUser?.role || 'user';
-    return new HttpHeaders({
-      'user-role': role
-    });
   }
 
   // Users Management
@@ -99,10 +108,8 @@ export class UserService {
     return this.http.post<User>(this.apiUrl, user);
   }
 
-  // CORREGIDO: Agregar headers con el rol del usuario
   updateUser(id: string, user: Partial<User>): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch<any>(`${this.apiUrl}/${id}`, user, { headers });
+    return this.http.patch<any>(`${this.apiUrl}/${id}`, user);
   }
 
   // Statistics
@@ -110,50 +117,42 @@ export class UserService {
     return this.http.get<UserStats>(`${this.apiUrl}/number-of-users`);
   }
 
-  // Admin Operations - CORREGIDOS: Agregar headers
+  // Admin Operations
   disableUser(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.apiUrl}/${id}/disable`, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/disable`, {});
   }
 
   reactivateUser(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.apiUrl}/${id}/reactivate`, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/reactivate`, {});
   }
 
   deleteUser(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.apiUrl}/hard/${id}`, { headers });
+    return this.http.delete(`${this.apiUrl}/hard/${id}`);
   }
 
   makeUserAdmin(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.apiUrl}/${id}/make-admin`, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/make-admin`, {});
   }
 
   removeUserAdmin(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.apiUrl}/${id}/remove-admin`, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/remove-admin`, {});
   }
 
-  // ✅ CORREGIDO: Método para hacer manager - usar endpoint específico
   makeUserManager(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    const url = `${this.apiUrl}/${id}/make-manager`;
-    
-    console.log('=== MAKE MANAGER SERVICE DEBUG ===');
-    console.log('URL:', url);
-    console.log('Headers:', headers);
-    console.log('Current user sending request:', this.currentUser);
-    console.log('User role in header:', headers.get('user-role'));
-    
-    return this.http.patch(url, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/make-manager`, {});
   }
 
-  // ✅ CORREGIDO: Método para quitar manager (convertir a user) - usar endpoint específico
   removeUserManager(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.apiUrl}/${id}/remove-manager`, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/remove-manager`, {});
+  }
+
+  // User Profile
+  getMyProfile(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/me`);
+  }
+
+  updateMyProfile(userData: Partial<User>): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/me`, userData);
   }
 
   // Admin User Creation
@@ -162,12 +161,26 @@ export class UserService {
   }
 
   createAdminUser(user: Partial<User>): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post(`${this.apiUrl}/admin/create`, user, { headers });
+    return this.http.post(`${this.apiUrl}/admin/create`, user);
   }
 
   logout(): void {
     this.currentUser = null;
     localStorage.removeItem('currentUser');
+  }
+
+  // Add to UserService class
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, {
+      currentPassword,
+      newPassword
+    });
+  }
+
+  changeEmail(newEmail: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-email`, {
+      newEmail,
+      password
+    });
   }
 }

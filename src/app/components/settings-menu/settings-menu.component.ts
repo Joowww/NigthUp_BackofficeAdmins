@@ -1,58 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ChangePasswordModalComponent } from '../change-password-modal/change-password-modal.component';
-import { ChangeEmailModalComponent } from '../change-email-modal/change-email-modal.component';
-import { CompanyPolicyModalComponent } from '../company-policy-modal/company-policy-modal.component';
-import { LogoutModalComponent } from '../logout-modal/logout-modal.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-settings-menu',
   standalone: true,
-  imports: [
-    CommonModule, 
-    ChangePasswordModalComponent,
-    ChangeEmailModalComponent,
-    CompanyPolicyModalComponent,
-    LogoutModalComponent
-  ],
+  imports: [CommonModule],
   templateUrl: './settings-menu.component.html',
   styleUrls: ['./settings-menu.component.css']
 })
 export class SettingsMenuComponent {
-  isOpen = false;
-  showLanguageMenu = false;
-  theme: 'light' | 'dark' = 'dark';
-  language = 'en';
+  @Output() changeEmail = new EventEmitter<void>();
+  @Output() changePassword = new EventEmitter<void>();
+  @Output() companyPolicy = new EventEmitter<void>();
+  isMenuOpen = false;
+  currentUser: any;
 
-  showPasswordModal = false;
-  showEmailModal = false;
-  showPolicyModal = false;
-  showLogoutModal = false;
-
-  languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  ];
-
-  constructor(private router: Router) {}
-
-  get currentLanguage() {
-    return this.languages.find(lang => lang.code === this.language) || this.languages[0];
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.currentUser = this.authService.getCurrentUser();
   }
 
-  toggleTheme() {
-    this.theme = this.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.classList.toggle('dark');
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
-  selectLanguage(langCode: string) {
-    this.language = langCode;
-    this.showLanguageMenu = false;
+  logout(): void {
+    this.authService.logout();
   }
 
-  logout() {
-    this.router.navigate(['/login']);
+  get userInitial(): string {
+    return this.currentUser?.username?.charAt(0).toUpperCase() || 'U';
+  }
+
+  openChangeEmail(): void {
+    this.changeEmail.emit();
+    this.isMenuOpen = false;
+  }
+
+  openChangePassword(): void {
+    this.changePassword.emit();
+    this.isMenuOpen = false;
+  }
+
+  openCompanyPolicy(): void {
+    this.companyPolicy.emit();
+    this.isMenuOpen = false;
   }
 }

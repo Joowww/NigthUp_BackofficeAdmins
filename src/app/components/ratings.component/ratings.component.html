@@ -1,0 +1,280 @@
+<div class="page-container">
+  <!-- HEADER -->
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Event Ratings</h1>
+      <p class="page-subtitle">Manage and view event ratings and reviews</p>
+    </div>
+    <button class="create-button" (click)="openCreateModal()">
+      <svg class="create-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Add Rating
+    </button>
+  </header>
+
+  <!-- SEARCH AND STATS SECTION -->
+  <section class="search-filters">
+    <div class="search-container">
+      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input
+        type="text"
+        placeholder="Search by event ID, username or comment..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+        class="search-input"
+      />
+    </div>
+
+    <div class="stats-container">
+      <input
+        type="text"
+        placeholder="Event ID for statistics"
+        [(ngModel)]="eventIdForStats"
+        class="search-input"
+      />
+      <button class="stats-button" (click)="getEventStats()">
+        Get Stats
+      </button>
+    </div>
+  </section>
+
+  <!-- STATISTICS DISPLAY -->
+  <div *ngIf="stats.count > 0" class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Average Rating</div>
+        <div class="stat-icon average-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ stats.average }}/5</div>
+      <div class="stat-description">Based on {{ stats.count }} ratings</div>
+    </div>
+  </div>
+
+  <!-- RATINGS TABLE -->
+  <section class="table-container">
+    <table class="ratings-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Event ID</th>
+          <th>Username</th>
+          <th>Rating</th>
+          <th>Comment</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rating of filteredRatings">
+          <td class="rating-id">#{{ getShortId(rating._id) }}</td>
+          <td class="event-id">{{ getShortId(rating.event) }}</td>
+          <td class="username">{{ rating.username }}</td>
+          <td class="rating-score">
+            <span class="stars">{{ generateStars(rating.score) }}</span>
+            <span class="score-text">({{ rating.score }}/5)</span>
+          </td>
+          <td class="comment">{{ rating.comment || 'No comment' }}</td>
+          <td class="rating-date">{{ formatDate(rating.createdAt!) }}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-btn view" title="View details" (click)="openViewModal(rating)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+              <button class="action-btn edit" title="Edit" (click)="openEditModal(rating)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button class="action-btn delete" title="Delete" (click)="deleteRating(rating)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- LOADING STATE -->
+    <div *ngIf="loading" class="info-note">
+      <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div class="info-text">
+        Loading ratings...
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="filteredRatings.length === 0 && !loading" class="info-note">
+      <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div class="info-text">
+        No ratings found. Create your first rating using the "Add Rating" button above.
+      </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <footer class="table-footer">
+      <div class="pagination-info">
+        Showing {{ pagination.skip + 1 }} - {{ pagination.skip + filteredRatings.length }} of {{ pagination.total }} ratings
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
+        <button class="pagination-btn" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- MODAL CREAR VALORACIÓN -->
+  <div *ngIf="isCreateModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Add New Rating</h2>
+        <button class="close-button" (click)="closeCreateModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="submitCreate()" #createForm="ngForm">
+          <div class="form-group">
+            <label for="event">Event ID *</label>
+            <input type="text" id="event" name="event" 
+                  [(ngModel)]="newRatingData.event" 
+                  required class="form-input" 
+                  placeholder="Enter event ID">
+         </div>
+
+          <div class="form-group">
+            <label for="username">Username *</label>
+            <input type="text" id="username" name="username" 
+                  [(ngModel)]="newRatingData.username" 
+                  required class="form-input" 
+                  placeholder="Enter your username">
+          </div>
+
+          <div class="form-group">
+            <label for="score">Rating (1-5 stars) *</label>
+            <select id="score" name="score" [(ngModel)]="newRatingData.score" required class="form-input">
+              <option value="1">★☆☆☆☆ - Poor</option>
+              <option value="2">★★☆☆☆ - Fair</option>
+              <option value="3">★★★☆☆ - Good</option>
+              <option value="4">★★★★☆ - Very Good</option>
+              <option value="5">★★★★★ - Excellent</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="comment">Comment</label>
+            <textarea id="comment" name="comment" [(ngModel)]="newRatingData.comment" class="form-input" rows="3" placeholder="Optional comment about the event"></textarea>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="submitCreate()" [disabled]="loading">
+          {{ loading ? 'Creating...' : 'Create Rating' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR VALORACIÓN -->
+  <div *ngIf="isEditModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Edit Rating</h2>
+        <button class="close-button" (click)="closeEditModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="submitEdit()" #editForm="ngForm">
+          <div class="form-group">
+            <label for="editScore">Rating (1-5 stars) *</label>
+            <select id="editScore" name="editScore" [(ngModel)]="editedRatingData.score" required class="form-input">
+              <option value="1">★☆☆☆☆ - Poor</option>
+              <option value="2">★★☆☆☆ - Fair</option>
+              <option value="3">★★★☆☆ - Good</option>
+              <option value="4">★★★★☆ - Very Good</option>
+              <option value="5">★★★★★ - Excellent</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="editComment">Comment</label>
+            <textarea id="editComment" name="editComment" [(ngModel)]="editedRatingData.comment" class="form-input" rows="3" placeholder="Optional comment about the event"></textarea>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="submitEdit()" [disabled]="loading">
+          {{ loading ? 'Updating...' : 'Update Rating' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER DETALLES -->
+  <div *ngIf="isViewModalOpen" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Rating Details</h2>
+        <button class="close-button" (click)="closeViewModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedRating">
+        <div class="rating-details">
+          <div class="detail-row">
+            <span class="detail-label">Rating ID:</span>
+            <span class="detail-value">{{ selectedRating._id }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Event ID:</span>
+            <span class="detail-value">{{ selectedRating.event }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Username:</span>
+            <span class="detail-value">{{ selectedRating.username }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Rating:</span>
+            <span class="detail-value stars-large">{{ generateStars(selectedRating.score) }} ({{ selectedRating.score }}/5)</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Comment:</span>
+            <span class="detail-value">{{ selectedRating.comment || 'No comment' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Created:</span>
+            <span class="detail-value">{{ formatDate(selectedRating.createdAt!) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Last Updated:</span>
+            <span class="detail-value">{{ formatDate(selectedRating.updatedAt!) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeViewModal()">Close</button>
+        <button type="button" class="btn-primary" (click)="openEditModal(selectedRating!)" *ngIf="selectedRating">
+          Edit Rating
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

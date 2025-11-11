@@ -15,6 +15,14 @@ export class OrganizedEventsComponent implements OnInit {
   events: Event[] = [];
   loading = false;
 
+  // Paginación
+  pagination = {
+    skip: 0,
+    limit: 10,
+    total: 0,
+    hasMore: false
+  };
+
   // Variables para estadísticas reales
   eventStats = {
     total: 0,
@@ -50,12 +58,16 @@ export class OrganizedEventsComponent implements OnInit {
     this.calculateStats();
   }
 
-  // ✅ Cargar eventos reales desde la BD
-  loadEvents(): void {
+  // Cargar eventos paginados
+  loadEvents(skip: number = this.pagination.skip): void {
     this.loading = true;
-    this.eventService.getAllEventsWithInactive(0, 50).subscribe({
+    this.eventService.getAllEvents(skip, this.pagination.limit).subscribe({
       next: (response) => {
         this.events = response.events;
+        this.pagination = {
+          ...response.pagination,
+          skip: skip
+        };
         this.calculateStats();
         this.loading = false;
       },
@@ -65,6 +77,18 @@ export class OrganizedEventsComponent implements OnInit {
         alert('Error loading events: ' + (error.error?.message || 'Unknown error'));
       }
     });
+  }
+
+  nextPage(): void {
+    if (this.pagination.hasMore) {
+      this.loadEvents(this.pagination.skip + this.pagination.limit);
+    }
+  }
+
+  prevPage(): void {
+    if (this.pagination.skip > 0) {
+      this.loadEvents(this.pagination.skip - this.pagination.limit);
+    }
   }
 
   // ✅ Calcular estadísticas reales

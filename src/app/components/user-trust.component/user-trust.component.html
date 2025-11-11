@@ -1,0 +1,348 @@
+<div class="page-container">
+  <!-- HEADER -->
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Trust System</h1>
+      <p class="page-subtitle">Manage and view user trust ratings</p>
+    </div>
+    <button class="create-button" (click)="openCreateModal()">
+      <svg class="create-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Add Trust Rating
+    </button>
+  </header>
+
+  <!-- SEARCH AND STATS SECTION -->
+  <section class="search-filters">
+    <div class="search-container">
+      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input
+        type="text"
+        placeholder="Search by user or comment..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+        class="search-input"
+      />
+    </div>
+  </section>
+
+  <!-- STATISTICS DISPLAY -->
+  <div class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Average Trust</div>
+        <div class="stat-icon average-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">
+        <ng-container *ngIf="globalAverageTrust !== null; else loadingAvg">
+          {{ globalAverageTrust | number:'1.1-2' }}
+        </ng-container>
+        <ng-template #loadingAvg>
+          <span class="loading-text">Loading...</span>
+        </ng-template>
+      </div>
+      <div class="stat-description">Based on {{ stats.count }} ratings</div>
+    </div>
+  </div>
+
+  <!-- TRUST RATINGS TABLE -->
+  <section class="table-container">
+    <table class="ratings-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Rated User</th>
+          <th>Score</th>
+          <th>Comment</th>
+          <th>Context</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rating of filteredRatings">
+          <td class="rating-id">#{{ getShortId(rating._id) }}</td>
+          <td>{{ rating.rated }}</td>
+          <td><span class="stars">{{ generateStars(rating.score) }}</span></td>
+          <td>{{ rating.comment || 'No comment' }}</td>
+          <td>{{ rating.context }}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-btn view" title="View details" (click)="openViewModal(rating)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+              <button class="action-btn edit" title="Edit" (click)="openEditModal(rating)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button class="action-btn delete" title="Delete" (click)="deleteRating(rating)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="dashboard-pagination">
+      <button class="btn-secondary" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
+      <span>Page {{ (pagination.skip / pagination.limit) + 1 }} / {{ getTotalPages() }}</span>
+      <button class="btn-secondary" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
+    </div>
+    
+    <div *ngIf="loading" class="info-note">
+      <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div class="info-text">Loading trust ratings...</div>
+    </div>
+    
+    <div *ngIf="filteredRatings.length === 0 && !loading" class="info-note">
+      <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div class="info-text">
+        No trust ratings found. Create your first rating using the "Add Trust Rating" button above.
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATE TRUST RATING MODAL -->
+  <div *ngIf="isCreateModalOpen" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create Trust Rating</h2>
+        <button class="close-button" (click)="closeCreateModal()">
+          <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="submitCreate()" class="modal-form">
+        <div class="form-group">
+          <label for="rated">Rated User ID *</label>
+          <input 
+            type="text" 
+            id="rated" 
+            [(ngModel)]="newRatingData.rated" 
+            name="rated" 
+            required
+            placeholder="Enter user ID"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="score">Score (1-5) *</label>
+          <div class="score-input-container">
+            <input 
+              type="range" 
+              id="score" 
+              [(ngModel)]="newRatingData.score" 
+              name="score"
+              min="1" 
+              max="5" 
+              step="1"
+              class="score-slider"
+            >
+            <div class="score-display">
+              <span class="stars">{{ generateStars(newRatingData.score || 5) }}</span>
+              <span class="score-value">({{ newRatingData.score || 5 }}/5)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="comment">Comment</label>
+          <textarea 
+            id="comment" 
+            [(ngModel)]="newRatingData.comment" 
+            name="comment"
+            placeholder="Enter your comment"
+            rows="3"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="context">Context *</label>
+          <select 
+            id="context" 
+            [(ngModel)]="newRatingData.context" 
+            name="context"
+            required
+          >
+            <option value="general">General</option>
+            <option value="event">Event</option>
+            <option value="transaction">Transaction</option>
+            <option value="collaboration">Collaboration</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+          <button type="submit" class="create-button" [disabled]="!newRatingData.rated || !newRatingData.context">
+            Create Rating
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT TRUST RATING MODAL -->
+  <div *ngIf="isEditModalOpen" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Trust Rating</h2>
+        <button class="close-button" (click)="closeEditModal()">
+          <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="submitEdit()" class="modal-form">
+        <div class="form-group">
+          <label for="editRated">Rated User ID *</label>
+          <input 
+            type="text" 
+            id="editRated" 
+            [(ngModel)]="editedRatingData.rated" 
+            name="editRated" 
+            required
+            placeholder="Enter user ID"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="editScore">Score (1-5) *</label>
+          <div class="score-input-container">
+            <input 
+              type="range" 
+              id="editScore" 
+              [(ngModel)]="editedRatingData.score" 
+              name="editScore"
+              min="1" 
+              max="5" 
+              step="1"
+              class="score-slider"
+            >
+            <div class="score-display">
+              <span class="stars">{{ generateStars(editedRatingData.score || 5) }}</span>
+              <span class="score-value">({{ editedRatingData.score || 5 }}/5)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="editComment">Comment</label>
+          <textarea 
+            id="editComment" 
+            [(ngModel)]="editedRatingData.comment" 
+            name="editComment"
+            placeholder="Enter your comment"
+            rows="3"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="editContext">Context *</label>
+          <select 
+            id="editContext" 
+            [(ngModel)]="editedRatingData.context" 
+            name="editContext"
+            required
+          >
+            <option value="general">General</option>
+            <option value="event">Event</option>
+            <option value="transaction">Transaction</option>
+            <option value="collaboration">Collaboration</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+          <button type="submit" class="create-button" [disabled]="!editedRatingData.rated || !editedRatingData.context">
+            Update Rating
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW TRUST RATING MODAL -->
+  <div *ngIf="isViewModalOpen" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Trust Rating Details</h2>
+        <button class="close-button" (click)="closeViewModal()">
+          <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div *ngIf="selectedRating" class="details-container">
+        <div class="detail-item">
+          <label>ID:</label>
+          <span class="detail-value id-value">{{ selectedRating._id }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Rater:</label>
+          <span class="detail-value">{{ selectedRating.rater }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Rated User:</label>
+          <span class="detail-value">{{ selectedRating.rated }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Score:</label>
+          <div class="score-display">
+            <span class="stars large-stars">{{ generateStars(selectedRating.score) }}</span>
+            <span class="score-value">({{ selectedRating.score }}/5)</span>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <label>Comment:</label>
+          <span class="detail-value">{{ selectedRating.comment || 'No comment' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Context:</label>
+          <span class="detail-value">{{ selectedRating.context }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedRating.createdAt">
+          <label>Created:</label>
+          <span class="detail-value">{{ selectedRating.createdAt | date:'medium' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedRating.updatedAt">
+          <label>Updated:</label>
+          <span class="detail-value">{{ selectedRating.updatedAt | date:'medium' }}</span>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeViewModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

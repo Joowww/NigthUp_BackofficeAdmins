@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { UserService, User, LoginResponse } from './user.service';
 import { Router } from '@angular/router';
 
@@ -8,46 +10,53 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private tokenSubject = new BehaviorSubject<string | null>(null);
+  
   public currentUser$ = this.currentUserSubject.asObservable();
+  public token$ = this.tokenSubject.asObservable();
 
   constructor(
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {
-    // Check for stored user on init
+    // Check for stored user and token on init
     const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
+    const storedToken = localStorage.getItem('token');
+    
+    if (storedUser && storedToken) {
       this.currentUserSubject.next(JSON.parse(storedUser));
+      this.tokenSubject.next(storedToken);
     }
   }
 
-  login(username: string, password: string, isBackoffice: boolean = false): Observable<LoginResponse> {
-    const loginObservable = isBackoffice 
-      ? this.userService.login(username, password)
-      : this.userService.login(username, password);
-
-    return new Observable(observer => {
-      loginObservable.subscribe({
-        next: (response) => {
-          if (response.user) {
-            this.currentUserSubject.next(response.user);
-            localStorage.setItem('currentUser', JSON.stringify(response.user));
-            localStorage.setItem('isBackoffice', isBackoffice.toString());
+  login(username: string, password: string): Observable<LoginResponse> {
+    return this.userService.login(username, password).pipe(
+      tap(response => {
+        if (response.user && response.token) {
+          this.currentUserSubject.next(response.user);
+          this.tokenSubject.next(response.token);
+          
+          localStorage.setItem('currentUser', JSON.stringify(response.user));
+          localStorage.setItem('token', response.token);
+          
+          if (response.refreshToken) {
+            localStorage.setItem('refreshToken', response.refreshToken);
           }
-          observer.next(response);
-          observer.complete();
-        },
-        error: (error) => {
-          observer.error(error);
         }
-      });
-    });
+      })
+    );
   }
 
   logout(): void {
     this.currentUserSubject.next(null);
+    this.tokenSubject.next(null);
+    
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('isBackoffice');
+    
     this.router.navigate(['/login']);
   }
 
@@ -55,8 +64,12 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  getToken(): string | null {
+    return this.tokenSubject.value;
+  }
+
   isAuthenticated(): boolean {
-    return this.currentUserSubject.value !== null;
+    return this.currentUserSubject.value !== null && this.tokenSubject.value !== null;
   }
 
   isAdmin(): boolean {
@@ -72,5 +85,43 @@ export class AuthService {
   hasRole(role: string): boolean {
     const user = this.currentUserSubject.value;
     return user ? user.role === role : false;
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/user/forgot-password`, { email });
+  }
+
+  // Refresh token method
+  refreshToken(): Observable<any> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const userId = this.getCurrentUser()?._id;
+    
+    if (!refreshToken || !userId) {
+      throw new Error('No refresh token available');
+    }
+    
+    return this.userService.refreshToken(refreshToken, userId).pipe(
+      tap(response => {
+        if (response.token) {
+          this.tokenSubject.next(response.token);
+          localStorage.setItem('token', response.token);
+        }
+      })
+    );
+  }
+
+  // Add to AuthService class
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.userService.changePassword(currentPassword, newPassword);
+  }
+
+  changeEmail(newEmail: string, password: string): Observable<any> {
+    return this.userService.changeEmail(newEmail, password);
+  }
+
+  // Update current user in local storage
+  updateCurrentUser(user: User): void {
+    this.currentUserSubject.next(user);
+    localStorage.setItem('currentUser', JSON.stringify(user));
   }
 }

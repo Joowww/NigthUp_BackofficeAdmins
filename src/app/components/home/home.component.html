@@ -9,7 +9,11 @@
     </div>
     <div class="header-actions">
       <!-- Settings menu component -->
-      <app-settings-menu></app-settings-menu>
+      <app-settings-menu 
+        (changeEmail)="openChangeEmailModal()"
+        (changePassword)="openChangePasswordModal()"
+        (companyPolicy)="openCompanyPolicyModal()"
+      ></app-settings-menu>
     </div>
   </header>
 
@@ -162,4 +166,19 @@
       </div>
     </article>
   </section>
+<!-- Modales de configuración -->
+<app-change-email-modal 
+  [isOpen]="isChangeEmailModalOpen"
+  (isOpenChange)="closeChangeEmailModal()">
+</app-change-email-modal>
+
+<app-change-password-modal 
+  [isOpen]="isChangePasswordModalOpen"
+  (isOpenChange)="closeChangePasswordModal()">
+</app-change-password-modal>
+
+<app-company-policy-modal 
+  [isOpen]="isCompanyPolicyModalOpen"
+  (isOpenChange)="closeCompanyPolicyModal()">
+</app-company-policy-modal>
 </div>

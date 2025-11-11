@@ -216,3 +216,25 @@
   color: #9ca3af;
   cursor: not-allowed;
 }
+
+.error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.success-message {
+    background-color: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    text-align: center;
+    font-size: 14px;
+}

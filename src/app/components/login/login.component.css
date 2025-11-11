@@ -292,7 +292,12 @@
 }
 
 .support-email {
-  color: #60a5fa;
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+.support-email:hover {
+    text-decoration: underline;
 }
 
 .error-message {

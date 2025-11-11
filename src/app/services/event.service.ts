@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
@@ -33,22 +33,8 @@ export interface EventsResponse {
 })
 export class EventService {
   private apiUrl = `${environment.apiUrl}/event`;
-  private currentUser: any = null;
 
-  constructor(private http: HttpClient) {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      this.currentUser = JSON.parse(savedUser);
-    }
-  }
-
-  // ✅ CORREGIDO: Agregar headers de autenticación
-  private getAuthHeaders(): HttpHeaders {
-    const role = this.currentUser?.role || 'user';
-    return new HttpHeaders({
-      'user-role': role
-    });
-  }
+  constructor(private http: HttpClient) {}
 
   // Public endpoints
   getAllEvents(skip: number = 0, limit: number = 10): Observable<EventsResponse> {
@@ -63,13 +49,11 @@ export class EventService {
     return this.http.get<Event>(`${this.apiUrl}/${id}`);
   }
 
-  // ✅ CORREGIDO: Agregar headers para crear evento (solo admin)
+  // Admin endpoints
   createEvent(event: Partial<Event>): Observable<Event> {
-    const headers = this.getAuthHeaders();
-    return this.http.post<Event>(this.apiUrl, event, { headers });
+    return this.http.post<Event>(this.apiUrl, event);
   }
 
-  // Admin endpoints
   getAllEventsWithInactive(skip: number = 0, limit: number = 10): Observable<EventsResponse> {
     const params = new HttpParams()
       .set('skip', skip.toString())
@@ -79,23 +63,23 @@ export class EventService {
   }
 
   disableEvent(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.apiUrl}/${id}/disable`, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/disable`, {});
   }
 
   reactivateEvent(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.apiUrl}/${id}/reactivate`, {}, { headers });
+    return this.http.patch(`${this.apiUrl}/${id}/reactivate`, {});
   }
 
   deleteEvent(id: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.apiUrl}/hard/${id}`, { headers });
+    return this.http.delete(`${this.apiUrl}/hard/${id}`);
   }
 
-  // ✅ CORREGIDO: Agregar headers para actualizar evento (admin o manager)
   updateEvent(id: string, event: Partial<Event>): Observable<Event> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch<Event>(`${this.apiUrl}/${id}`, event, { headers });
+    return this.http.patch<Event>(`${this.apiUrl}/${id}`, event);
+  }
+
+  // Event statistics
+  getEventStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/stats`);
   }
 }

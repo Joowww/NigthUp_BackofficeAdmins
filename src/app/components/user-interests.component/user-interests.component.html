@@ -1,0 +1,328 @@
+<div class="page-container">
+  <!-- HEADER -->
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">User Interests</h1>
+      <p class="page-subtitle">Manage and organize user interests</p>
+    </div>
+    <button class="create-button" (click)="openCreateModal()">
+      <svg class="create-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Add Interest
+    </button>
+  </header>
+
+  <!-- SEARCH AND STATS SECTION -->
+  <section class="search-filters">
+    <div class="search-container">
+      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input
+        type="text"
+        placeholder="Search by name or description..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+        class="search-input"
+      />
+    </div>
+  </section>
+
+  <!-- STATISTICS DISPLAY -->
+  <div class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Total Interests</div>
+        <div class="stat-icon total-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ stats.total }}</div>
+      <div class="stat-description">All interests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Active Interests</div>
+        <div class="stat-icon active-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ stats.active }}</div>
+      <div class="stat-description">Currently active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-label">Inactive Interests</div>
+        <div class="stat-icon events-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ stats.inactive }}</div>
+      <div class="stat-description">Currently inactive</div>
+    </div>
+  </div>
+
+  <!-- INTERESTS TABLE -->
+  <section class="table-container">
+    <table class="ratings-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Color</th>
+          <th>Users</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let interest of filteredInterests">
+          <td class="rating-id">#{{ getShortId(interest._id) }}</td>
+          <td>{{ interest.name }}</td>
+          <td>{{ interest.description }}</td>
+          <td>
+            <div class="color-display">
+              <div class="color-preview" [style.background]="interest.color"></div>
+              <span class="color-value">{{ interest.color }}</span>
+            </div>
+          </td>
+          <td>{{ interest.users.length || 0 }}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-btn view" title="View details" (click)="openViewModal(interest)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+              <button class="action-btn edit" title="Edit" (click)="openEditModal(interest)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button class="action-btn delete" title="Delete" (click)="deleteInterest(interest)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="dashboard-pagination">
+      <button class="btn-secondary" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
+      <span>Page {{ (pagination.skip / pagination.limit) + 1 }} / {{ getTotalPages() }}</span>
+      <button class="btn-secondary" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
+    </div>
+    
+    <div *ngIf="loading" class="info-note">
+      <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div class="info-text">Loading interests...</div>
+    </div>
+    
+    <div *ngIf="filteredInterests.length === 0 && !loading" class="info-note">
+      <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div class="info-text">
+        No interests found. Create your first interest using the "Add Interest" button above.
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATE INTEREST MODAL -->
+  <div *ngIf="isCreateModalOpen" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create New Interest</h2>
+        <button class="close-button" (click)="closeCreateModal()">
+          <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="submitCreate()" class="modal-form">
+        <div class="form-group">
+          <label for="name">Interest Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            [(ngModel)]="newInterestData.name" 
+            name="name" 
+            required
+            placeholder="Enter interest name"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            [(ngModel)]="newInterestData.description" 
+            name="description"
+            placeholder="Enter interest description"
+            rows="3"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="color">Color</label>
+          <div class="color-input-container">
+            <input 
+              type="color" 
+              id="color" 
+              [(ngModel)]="newInterestData.color" 
+              name="color"
+              class="color-picker"
+            >
+            <span class="color-value">{{ newInterestData.color }}</span>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+          <button type="submit" class="create-button" [disabled]="!newInterestData.name">
+            Create Interest
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT INTEREST MODAL -->
+  <div *ngIf="isEditModalOpen" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Interest</h2>
+        <button class="close-button" (click)="closeEditModal()">
+          <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="submitEdit()" class="modal-form">
+        <div class="form-group">
+          <label for="editName">Interest Name *</label>
+          <input 
+            type="text" 
+            id="editName" 
+            [(ngModel)]="editedInterestData.name" 
+            name="editName" 
+            required
+            placeholder="Enter interest name"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="editDescription">Description</label>
+          <textarea 
+            id="editDescription" 
+            [(ngModel)]="editedInterestData.description" 
+            name="editDescription"
+            placeholder="Enter interest description"
+            rows="3"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="editColor">Color</label>
+          <div class="color-input-container">
+            <input 
+              type="color" 
+              id="editColor" 
+              [(ngModel)]="editedInterestData.color" 
+              name="editColor"
+              class="color-picker"
+            >
+            <span class="color-value">{{ editedInterestData.color }}</span>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+          <button type="submit" class="create-button" [disabled]="!editedInterestData.name">
+            Update Interest
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW INTEREST MODAL -->
+  <div *ngIf="isViewModalOpen" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Interest Details</h2>
+        <button class="close-button" (click)="closeViewModal()">
+          <svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div *ngIf="selectedInterest" class="details-container">
+        <div class="detail-item">
+          <label>ID:</label>
+          <span class="detail-value id-value">{{ selectedInterest._id }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Name:</label>
+          <span class="detail-value">{{ selectedInterest.name }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Description:</label>
+          <span class="detail-value">{{ selectedInterest.description || 'No description' }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Color:</label>
+          <div class="color-display">
+            <div class="color-preview" [style.background-color]="selectedInterest.color"></div>
+            <span class="color-value">{{ selectedInterest.color }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <label>Users Count:</label>
+          <span class="detail-value">{{ selectedInterest.users.length || 0 }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <label>Status:</label>
+          <span [class]="'status-badge ' + (selectedInterest.active ? 'active' : 'inactive')">
+            {{ selectedInterest.active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedInterest.createdAt">
+          <label>Created:</label>
+          <span class="detail-value">{{ selectedInterest.createdAt | date:'medium' }}</span>
+        </div>
+        
+        <div class="detail-item" *ngIf="selectedInterest.updatedAt">
+          <label>Updated:</label>
+          <span class="detail-value">{{ selectedInterest.updatedAt | date:'medium' }}</span>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeViewModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
