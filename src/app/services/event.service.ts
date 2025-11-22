@@ -3,11 +3,17 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
+// Interfaz para la ubicación GeoJSON
+export interface Location {
+  type: string;
+  coordinates: [number, number];
+}
+
 export interface Event {
   _id?: string;
   name: string;
   schedule: string;
-  location: string;
+  location: Location;
   description: string;
   category: string;
   capacity: number;
@@ -81,5 +87,50 @@ export class EventService {
   // Event statistics
   getEventStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/stats`);
+  }
+
+  // Métodos para manejar coordenadas - CORREGIDO
+  createEventWithCoordinates(
+    name: string,
+    schedule: string,
+    longitude: number,
+    latitude: number,
+    description: string,
+    category: string,
+    capacity: number = 100,
+    price: number = 0,
+    active: boolean = true
+  ): Observable<Event> {
+    const eventData: Partial<Event> = {
+      name,
+      schedule,
+      location: {
+        type: 'Point',
+        coordinates: [longitude, latitude]
+      },
+      description,
+      category,
+      capacity,
+      price,
+      active,
+      participants: [] // Añadido para cumplir con la interfaz
+    };
+    
+    return this.createEvent(eventData);
+  }
+
+  // Método para validar coordenadas
+  isValidCoordinate(latitude: number, longitude: number): boolean {
+    return latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
+  }
+
+  // Método para formatear coordenadas para display
+  formatCoordinates(location: Location): string {
+    if (!location || !location.coordinates) {
+      return 'Location not available';
+    }
+    
+    const [lng, lat] = location.coordinates;
+    return `Lat: ${lat?.toFixed(4)}, Lng: ${lng?.toFixed(4)}`;
   }
 }

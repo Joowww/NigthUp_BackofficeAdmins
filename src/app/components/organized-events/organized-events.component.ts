@@ -3,6 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventService, Event } from '../../services/event.service';
 
+// Interfaz para la ubicación GeoJSON
+interface Location {
+  type: string;
+  coordinates: [number, number];
+}
+
 @Component({
   selector: 'app-organized-events',
   standalone: true,
@@ -37,11 +43,14 @@ export class OrganizedEventsComponent implements OnInit {
   isViewModalOpen = false;
   selectedEvent: Event | null = null;
   
-  // Datos para formularios
-  newEventData: Partial<Event> = {
+  // Datos para formularios - ACTUALIZADO con Location
+  newEventData: any = {
     name: '',
     schedule: '',
-    location: '',
+    location: {
+      type: 'Point',
+      coordinates: [0, 0] // [longitude, latitude]
+    },
     description: '',
     category: '',
     capacity: 100,
@@ -49,7 +58,13 @@ export class OrganizedEventsComponent implements OnInit {
     active: true
   };
 
-  editedEventData: Partial<Event> = {};
+  editedEventData: any = {};
+
+  // Campos temporales para los formularios
+  tempLatitude: number = 0;
+  tempLongitude: number = 0;
+  tempEditLatitude: number = 0;
+  tempEditLongitude: number = 0;
 
   constructor(private eventService: EventService) {}
 
@@ -112,13 +127,18 @@ export class OrganizedEventsComponent implements OnInit {
     this.newEventData = {
       name: '',
       schedule: '',
-      location: '',
+      location: {
+        type: 'Point',
+        coordinates: [0, 0]
+      },
       description: '',
       category: '',
       capacity: 100,
       price: 0,
       active: true
     };
+    this.tempLatitude = 0;
+    this.tempLongitude = 0;
     this.isCreateModalOpen = true;
   }
 
@@ -128,12 +148,15 @@ export class OrganizedEventsComponent implements OnInit {
   }
 
   submitCreate(): void {
+    // Asignar las coordenadas desde los campos temporales
+    this.newEventData.location.coordinates = [this.tempLongitude, this.tempLatitude];
+    
     if (!this.validateEventData(this.newEventData)) return;
 
     this.loading = true;
     this.eventService.createEvent(this.newEventData).subscribe({
       next: (event) => {
-        this.events.unshift(event); // Agregar al inicio
+        this.events.unshift(event);
         this.calculateStats();
         this.closeCreateModal();
         this.loading = false;
@@ -170,6 +193,16 @@ export class OrganizedEventsComponent implements OnInit {
       price: event.price,
       active: event.active
     };
+    
+    // Establecer las coordenadas temporales para edición
+    if (event.location && event.location.coordinates) {
+      this.tempEditLongitude = event.location.coordinates[0];
+      this.tempEditLatitude = event.location.coordinates[1];
+    } else {
+      this.tempEditLongitude = 0;
+      this.tempEditLatitude = 0;
+    }
+    
     this.isEditModalOpen = true;
   }
 
@@ -181,12 +214,18 @@ export class OrganizedEventsComponent implements OnInit {
 
   submitEdit(): void {
     if (!this.selectedEvent || !this.selectedEvent._id) return;
+    
+    // Asignar las coordenadas desde los campos temporales
+    this.editedEventData.location = {
+      type: 'Point',
+      coordinates: [this.tempEditLongitude, this.tempEditLatitude]
+    };
+    
     if (!this.validateEventData(this.editedEventData)) return;
 
     this.loading = true;
     this.eventService.updateEvent(this.selectedEvent._id, this.editedEventData).subscribe({
       next: (updatedEvent) => {
-        // Actualizar en la lista local
         const index = this.events.findIndex(e => e._id === this.selectedEvent!._id);
         if (index !== -1) {
           this.events[index] = { ...this.events[index], ...updatedEvent };
@@ -226,7 +265,7 @@ export class OrganizedEventsComponent implements OnInit {
   }
 
   // ✅ VALIDACIÓN DE DATOS
-  private validateEventData(eventData: Partial<Event>): boolean {
+  private validateEventData(eventData: any): boolean {
     if (!eventData.name || !eventData.schedule || !eventData.location || 
         !eventData.description || !eventData.category) {
       alert('Please fill all required fields: Name, Schedule, Location, Description, Category');
@@ -257,7 +296,6 @@ export class OrganizedEventsComponent implements OnInit {
     if (!dateString) return '';
     try {
       const date = new Date(dateString);
-      // Formato para input datetime-local: YYYY-MM-DDTHH:mm
       return date.toISOString().slice(0, 16);
     } catch {
       return '';
@@ -280,5 +318,15 @@ export class OrganizedEventsComponent implements OnInit {
     
     if (eventDate < now) return 'Completed';
     return 'Active';
+  }
+
+  // ✅ OBTENER DIRECCIÓN LEGIBLE DESDE COORDENADAS
+  getReadableLocation(event: Event): string {
+    if (!event.location || !event.location.coordinates) {
+      return 'Location not available';
+    }
+    
+    const [lng, lat] = event.location.coordinates;
+    return `Lat: ${lat?.toFixed(4)}, Lng: ${lng?.toFixed(4)}`;
   }
 }

@@ -104,7 +104,7 @@
             <svg class="venue-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             </svg>
-            {{ event.location }}
+            {{ getReadableLocation(event) }}
           </div>
         </div>
         <span [class]="'status-badge ' + getEventStatus(event).toLowerCase()">{{ getEventStatus(event) }}</span>
@@ -180,7 +180,7 @@
       <tbody>
         <tr *ngFor="let event of events">
           <td class="event-name">{{ event.name }}</td>
-          <td class="event-venue">{{ event.location }}</td>
+          <td class="event-venue">{{ getReadableLocation(event) }}</td>
           <td class="event-datetime">{{ formatDate(event.schedule) }}</td>
           <td class="event-organizer">{{ event.category }}</td>
           <td>
@@ -245,8 +245,15 @@
           </div>
 
           <div class="form-group">
-            <label for="location">Location *</label>
-            <input type="text" id="location" name="location" [(ngModel)]="newEventData.location" required class="form-input">
+            <label for="latitude">Latitude *</label>
+            <input type="number" id="latitude" name="latitude" [(ngModel)]="tempLatitude" 
+                   required class="form-input" step="any" placeholder="40.4168">
+          </div>
+
+          <div class="form-group">
+            <label for="longitude">Longitude *</label>
+            <input type="number" id="longitude" name="longitude" [(ngModel)]="tempLongitude" 
+                   required class="form-input" step="any" placeholder="-3.7038">
           </div>
 
           <div class="form-group">
@@ -301,8 +308,15 @@
           </div>
 
           <div class="form-group">
-            <label for="editLocation">Location *</label>
-            <input type="text" id="editLocation" name="editLocation" [(ngModel)]="editedEventData.location" required class="form-input">
+            <label for="editLatitude">Latitude *</label>
+            <input type="number" id="editLatitude" name="editLatitude" [(ngModel)]="tempEditLatitude" 
+                   required class="form-input" step="any">
+          </div>
+
+          <div class="form-group">
+            <label for="editLongitude">Longitude *</label>
+            <input type="number" id="editLongitude" name="editLongitude" [(ngModel)]="tempEditLongitude" 
+                   required class="form-input" step="any">
           </div>
 
           <div class="form-group">
@@ -363,7 +377,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Location:</span>
-            <span class="detail-value">{{ selectedEvent.location }}</span>
+            <span class="detail-value">{{ getReadableLocation(selectedEvent) }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Description:</span>
