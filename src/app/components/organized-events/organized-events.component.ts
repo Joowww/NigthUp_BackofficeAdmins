@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EventService, Event } from '../../services/event.service';
+import { EventService, EventsResponse } from '../../services/event.service';
+import { IEvent } from '../../models/event';
 
 // Interfaz para la ubicación GeoJSON
 interface Location {
@@ -18,7 +19,7 @@ interface Location {
 })
 export class OrganizedEventsComponent implements OnInit {
   viewMode: 'grid' | 'list' = 'grid';
-  events: Event[] = [];
+  events: IEvent[] = [];
   loading = false;
 
   // Paginación
@@ -41,10 +42,10 @@ export class OrganizedEventsComponent implements OnInit {
   isCreateModalOpen = false;
   isEditModalOpen = false;
   isViewModalOpen = false;
-  selectedEvent: Event | null = null;
-  
+  selectedEvent: IEvent | null = null;
+
   // Datos para formularios - ACTUALIZADO con Location
-  newEventData: any = {
+  newEventData: Partial<IEvent> = {
     name: '',
     schedule: '',
     location: {
@@ -58,7 +59,7 @@ export class OrganizedEventsComponent implements OnInit {
     active: true
   };
 
-  editedEventData: any = {};
+  editedEventData: Partial<IEvent> = {};
 
   // Campos temporales para los formularios
   tempLatitude: number = 0;
@@ -66,7 +67,7 @@ export class OrganizedEventsComponent implements OnInit {
   tempEditLatitude: number = 0;
   tempEditLongitude: number = 0;
 
-  constructor(private eventService: EventService) {}
+  constructor(private eventService: EventService) { }
 
   ngOnInit(): void {
     this.loadEvents();
@@ -77,7 +78,7 @@ export class OrganizedEventsComponent implements OnInit {
   loadEvents(skip: number = this.pagination.skip): void {
     this.loading = true;
     this.eventService.getAllEvents(skip, this.pagination.limit).subscribe({
-      next: (response) => {
+      next: (response: EventsResponse) => {
         this.events = response.events;
         this.pagination = {
           ...response.pagination,
@@ -86,10 +87,10 @@ export class OrganizedEventsComponent implements OnInit {
         this.calculateStats();
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading events:', error);
         this.loading = false;
-        alert('Error loading events: ' + (error.error?.message || 'Unknown error'));
+        alert('Error loading events: ' + (error.error?.message || error.message));
       }
     });
   }
@@ -110,15 +111,15 @@ export class OrganizedEventsComponent implements OnInit {
   calculateStats(): void {
     this.eventStats.total = this.events.length;
     this.eventStats.active = this.events.filter(event => event.active).length;
-    
+
     // Calcular total de asistentes
-    this.eventStats.attendees = this.events.reduce((total, event) => 
+    this.eventStats.attendees = this.events.reduce((total, event) =>
       total + (event.participants?.length || 0), 0
     );
-    
+
     // Calcular tasa de asistencia promedio
     const totalCapacity = this.events.reduce((total, event) => total + (event.capacity || 0), 0);
-    this.eventStats.attendanceRate = totalCapacity > 0 ? 
+    this.eventStats.attendanceRate = totalCapacity > 0 ?
       Math.round((this.eventStats.attendees / totalCapacity) * 100) : 0;
   }
 
@@ -149,43 +150,45 @@ export class OrganizedEventsComponent implements OnInit {
 
   submitCreate(): void {
     // Asignar las coordenadas desde los campos temporales
-    this.newEventData.location.coordinates = [this.tempLongitude, this.tempLatitude];
-    
+    if (this.newEventData.location) {
+      this.newEventData.location.coordinates = [this.tempLongitude, this.tempLatitude];
+    }
+
     if (!this.validateEventData(this.newEventData)) return;
 
     this.loading = true;
-    this.eventService.createEvent(this.newEventData).subscribe({
-      next: (event) => {
+    this.eventService.createEvent(this.newEventData as IEvent).subscribe({
+      next: (event: IEvent) => {
         this.events.unshift(event);
         this.calculateStats();
         this.closeCreateModal();
         this.loading = false;
         alert('Event created successfully!');
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error creating event:', error);
         this.loading = false;
-        
+
         let errorMessage = 'Error creating event: ';
         if (error.status === 403) {
           errorMessage += 'Admin privileges required. Only administrators can create events.';
         } else if (error.status === 401) {
           errorMessage += 'You are not authorized. Please login again.';
         } else {
-          errorMessage += error.error?.message || 'Unknown error';
+          errorMessage += error.error?.message || error.message;
         }
-        
+
         alert(errorMessage);
       }
     });
   }
 
   // ✅ MODALES PARA EDITAR EVENTO
-  openEditModal(event: Event): void {
+  openEditModal(event: IEvent): void {
     this.selectedEvent = event;
     this.editedEventData = {
       name: event.name,
-      schedule: this.formatDateForInput(event.schedule),
+      schedule: this.formatDateForInput(event.schedule as string),
       location: event.location,
       description: event.description,
       category: event.category,
@@ -193,7 +196,7 @@ export class OrganizedEventsComponent implements OnInit {
       price: event.price,
       active: event.active
     };
-    
+
     // Establecer las coordenadas temporales para edición
     if (event.location && event.location.coordinates) {
       this.tempEditLongitude = event.location.coordinates[0];
@@ -202,7 +205,7 @@ export class OrganizedEventsComponent implements OnInit {
       this.tempEditLongitude = 0;
       this.tempEditLatitude = 0;
     }
-    
+
     this.isEditModalOpen = true;
   }
 
@@ -214,18 +217,18 @@ export class OrganizedEventsComponent implements OnInit {
 
   submitEdit(): void {
     if (!this.selectedEvent || !this.selectedEvent._id) return;
-    
+
     // Asignar las coordenadas desde los campos temporales
     this.editedEventData.location = {
       type: 'Point',
       coordinates: [this.tempEditLongitude, this.tempEditLatitude]
     };
-    
+
     if (!this.validateEventData(this.editedEventData)) return;
 
     this.loading = true;
-    this.eventService.updateEvent(this.selectedEvent._id, this.editedEventData).subscribe({
-      next: (updatedEvent) => {
+    this.eventService.updateEvent(this.selectedEvent._id, this.editedEventData as IEvent).subscribe({
+      next: (updatedEvent: IEvent) => {
         const index = this.events.findIndex(e => e._id === this.selectedEvent!._id);
         if (index !== -1) {
           this.events[index] = { ...this.events[index], ...updatedEvent };
@@ -235,26 +238,26 @@ export class OrganizedEventsComponent implements OnInit {
         this.loading = false;
         alert('Event updated successfully!');
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error updating event:', error);
         this.loading = false;
-        
+
         let errorMessage = 'Error updating event: ';
         if (error.status === 403) {
           errorMessage += 'Admin or manager privileges required.';
         } else if (error.status === 401) {
           errorMessage += 'You are not authorized. Please login again.';
         } else {
-          errorMessage += error.error?.message || 'Unknown error';
+          errorMessage += error.error?.message || error.message;
         }
-        
+
         alert(errorMessage);
       }
     });
   }
 
   // ✅ MODAL PARA VER DETALLES
-  openViewModal(event: Event): void {
+  openViewModal(event: IEvent): void {
     this.selectedEvent = event;
     this.isViewModalOpen = true;
   }
@@ -266,8 +269,8 @@ export class OrganizedEventsComponent implements OnInit {
 
   // ✅ VALIDACIÓN DE DATOS
   private validateEventData(eventData: any): boolean {
-    if (!eventData.name || !eventData.schedule || !eventData.location || 
-        !eventData.description || !eventData.category) {
+    if (!eventData.name || !eventData.schedule || !eventData.location ||
+      !eventData.description || !eventData.category) {
       alert('Please fill all required fields: Name, Schedule, Location, Description, Category');
       return false;
     }
@@ -275,10 +278,10 @@ export class OrganizedEventsComponent implements OnInit {
   }
 
   // ✅ FORMATEO DE FECHAS PARA DISPLAY
-  formatDate(dateString: string): string {
-    if (!dateString) return 'N/A';
+  formatDate(dateVal: string | Date | undefined): string {
+    if (!dateVal) return 'N/A';
     try {
-      const date = new Date(dateString);
+      const date = new Date(dateVal);
       return date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: 'short',
@@ -292,10 +295,10 @@ export class OrganizedEventsComponent implements OnInit {
   }
 
   // ✅ FORMATEO DE FECHAS PARA INPUT
-  formatDateForInput(dateString: string): string {
-    if (!dateString) return '';
+  formatDateForInput(dateVal: string | Date | undefined): string {
+    if (!dateVal) return '';
     try {
-      const date = new Date(dateString);
+      const date = new Date(dateVal);
       return date.toISOString().slice(0, 16);
     } catch {
       return '';
@@ -303,29 +306,29 @@ export class OrganizedEventsComponent implements OnInit {
   }
 
   // ✅ CALCULAR PORCENTAJE DE ASISTENCIA
-  getAttendancePercentage(event: Event): number {
+  getAttendancePercentage(event: IEvent): number {
     const participants = event.participants?.length || 0;
     const capacity = event.capacity || 1;
     return Math.round((participants / capacity) * 100);
   }
 
   // ✅ OBTENER ESTADO DEL EVENTO
-  getEventStatus(event: Event): string {
+  getEventStatus(event: IEvent): string {
     if (!event.active) return 'Cancelled';
-    
+
     const eventDate = new Date(event.schedule);
     const now = new Date();
-    
+
     if (eventDate < now) return 'Completed';
     return 'Active';
   }
 
   // ✅ OBTENER DIRECCIÓN LEGIBLE DESDE COORDENADAS
-  getReadableLocation(event: Event): string {
+  getReadableLocation(event: IEvent): string {
     if (!event.location || !event.location.coordinates) {
       return 'Location not available';
     }
-    
+
     const [lng, lat] = event.location.coordinates;
     return `Lat: ${lat?.toFixed(4)}, Lng: ${lng?.toFixed(4)}`;
   }

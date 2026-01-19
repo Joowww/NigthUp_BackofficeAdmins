@@ -1,12 +1,15 @@
-import { Event } from './event';
-
-export interface IBussines {
-  _id?: string;//CIF
+export interface IBusiness {
+  _id?: string;
   name: string;
   address?: string;
   phone?: string;
   email?: string;
-  eventos?: Event[];
-  managers?: string[];//id of that users who are managers of the business
+  location: {
+    type: 'Point';
+    coordinates: [number, number]; // [longitude, latitude]
+  };
+  events?: string[];
+  managers?: string[];
   active: boolean;
+  avatar?: string;
 }

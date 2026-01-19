@@ -11,17 +11,13 @@
   <section class="search-filters">
     <div class="search-container">
       <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
-      <input
-        type="text"
-        placeholder="Search users by name or email..."
-        [(ngModel)]="searchTerm"
-        (input)="applyFilters()"
-        class="search-input"
-      />
+      <input type="text" placeholder="Search users by name or email..." [(ngModel)]="searchTerm"
+        (input)="applyFilters()" class="search-input" />
     </div>
-    
+
     <!-- ✅ NUEVO: Filtros de rol y estado -->
     <div class="filter-button-group">
       <select [(ngModel)]="roleFilter" (change)="applyFilters()" class="filter-select export-button">
@@ -39,7 +35,8 @@
 
     <button class="export-button" (click)="exportToCSV()">
       <svg class="export-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
       </svg>
       Export CSV
     </button>
@@ -108,82 +105,78 @@
               <!-- Botón de ver detalles -->
               <button class="action-btn view" title="View details" (click)="openViewModal(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </button>
-              
+
               <!-- Botón de editar -->
               <button class="action-btn edit" title="Edit" (click)="openEditModal(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </button>
 
               <!-- Botón de eliminar/deshabilitar -->
               <button class="action-btn delete" title="Delete" (click)="openDeleteModal(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </button>
 
               <!-- Botón de reactivar (solo para usuarios inactivos) -->
-              <button 
-                *ngIf="!user.active" 
-                class="action-btn reactivate" 
-                title="Reactivate" 
-                (click)="reactivateUser(user)"
-              >
+              <button *ngIf="!user.active" class="action-btn reactivate" title="Reactivate"
+                (click)="reactivateUser(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </button>
 
               <!-- Botón para hacer admin (solo para usuarios no admin) -->
-              <button 
-                *ngIf="user.role !== 'admin'" 
-                class="action-btn make-admin" 
-                title="Make Admin" 
-                (click)="makeUserAdmin(user)"
-              >
+              <button *ngIf="user.role !== 'admin'" class="action-btn make-admin" title="Make Admin"
+                (click)="makeUserAdmin(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
                 </svg>
               </button>
 
               <!-- Botón para quitar admin (solo para usuarios admin) -->
-              <button 
-                *ngIf="user.role === 'admin'" 
-                class="action-btn remove-admin" 
-                title="Remove Admin" 
-                (click)="removeUserAdmin(user)"
-              >
+              <button *ngIf="user.role === 'admin'" class="action-btn remove-admin" title="Remove Admin"
+                (click)="removeUserAdmin(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
                 </svg>
               </button>
 
               <!-- Botón para hacer manager (solo para usuarios no manager) -->
-              <button 
-                *ngIf="user.role !== 'manager'" 
-                class="action-btn make-manager" 
-                title="Make Manager" 
-                (click)="makeUserManager(user)"
-              >
+              <button *ngIf="user.role !== 'manager'" class="action-btn make-manager" title="Make Manager"
+                (click)="makeUserManager(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </button>
 
               <!-- Botón para quitar manager (solo para usuarios manager) -->
-              <button 
-                *ngIf="user.role === 'manager'" 
-                class="action-btn remove-manager" 
-                title="Remove Manager" 
-                (click)="removeUserManager(user)"
-              >
+              <button *ngIf="user.role === 'manager'" class="action-btn remove-manager" title="Remove Manager"
+                (click)="removeUserManager(user)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                </svg>
+              </button>
+
+              <!-- Botón para asignar a negocio (solo para managers) -->
+              <button *ngIf="user.role === 'manager'" class="action-btn view" title="Assign to Business"
+                (click)="openAssignBusinessModal(user)" style="background: #8b5cf6;">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </button>
             </div>
@@ -211,7 +204,7 @@
         <h2>User Details</h2>
         <button class="close-button" (click)="closeViewModal()">&times;</button>
       </div>
-      
+
       <div class="modal-body">
         <div class="user-details" *ngIf="viewingUser">
           <div class="detail-row">
@@ -242,19 +235,14 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Events Registered:</span>
-            <span class="detail-value">{{ viewingUser.events.length || 0 }} events</span>
+            <span class="detail-value">{{ viewingUser.events?.length || 0 }} events</span>
           </div>
         </div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="closeViewModal()">Close</button>
-        <button 
-          type="button" 
-          class="btn-primary" 
-          (click)="openEditModal(viewingUser!)"
-          *ngIf="viewingUser"
-        >
+        <button type="button" class="btn-primary" (click)="openEditModal(viewingUser!)" *ngIf="viewingUser">
           Edit User
         </button>
       </div>
@@ -268,43 +256,25 @@
         <h2>Edit User</h2>
         <button class="close-button" (click)="closeEditModal()">&times;</button>
       </div>
-      
+
       <div class="modal-body">
         <form (ngSubmit)="submitEdit()" #editForm="ngForm">
           <div class="form-group">
             <label for="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              [(ngModel)]="editedUserData.username"
-              required
-              class="form-input dark-input"
-            >
+            <input type="text" id="username" name="username" [(ngModel)]="editedUserData.username" required
+              class="form-input dark-input">
           </div>
 
           <div class="form-group">
             <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              [(ngModel)]="editedUserData.email"
-              required
-              class="form-input dark-input"
-            >
+            <input type="email" id="email" name="email" [(ngModel)]="editedUserData.email" required
+              class="form-input dark-input">
           </div>
 
           <div class="form-group">
             <label for="birthday">Birthday</label>
-            <input
-              type="date"
-              id="birthday"
-              name="birthday"
-              [(ngModel)]="editedUserData.birthday"
-              required
-              class="form-input dark-input"
-            >
+            <input type="date" id="birthday" name="birthday" [(ngModel)]="editedUserData.birthday" required
+              class="form-input dark-input">
           </div>
 
           <!-- ❌ REMOVIDO: Checkbox de active -->
@@ -313,12 +283,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
-        <button 
-          type="submit" 
-          class="btn-primary" 
-          (click)="submitEdit()"
-          [disabled]="loading"
-        >
+        <button type="submit" class="btn-primary" (click)="submitEdit()" [disabled]="loading">
           {{ loading ? 'Updating...' : 'Update User' }}
         </button>
       </div>
@@ -332,11 +297,12 @@
         <h2>Manage User</h2>
         <button class="close-button" (click)="closeDeleteModal()">&times;</button>
       </div>
-      
+
       <div class="modal-body">
         <div class="warning-message">
           <svg class="warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
           <p>You are about to perform an action on user: <strong>{{ deletingUser?.username }}</strong></p>
         </div>
@@ -344,29 +310,21 @@
         <div class="action-selection">
           <div class="radio-group">
             <label class="radio-label dark-radio">
-              <input
-                type="radio"
-                name="deleteAction"
-                value="disable"
-                [(ngModel)]="deleteAction"
-                [checked]="deleteAction === 'disable'"
-              >
+              <input type="radio" name="deleteAction" value="disable" [(ngModel)]="deleteAction"
+                [checked]="deleteAction === 'disable'">
               <div class="radio-content">
                 <span class="radio-title">Disable User</span>
-                <span class="radio-description">The user will be deactivated but can be restored later. Recommended option.</span>
+                <span class="radio-description">The user will be deactivated but can be restored later. Recommended
+                  option.</span>
               </div>
             </label>
 
             <label class="radio-label dark-radio">
-              <input
-                type="radio"
-                name="deleteAction"
-                value="delete"
-                [(ngModel)]="deleteAction"
-              >
+              <input type="radio" name="deleteAction" value="delete" [(ngModel)]="deleteAction">
               <div class="radio-content">
                 <span class="radio-title">Delete Permanently</span>
-                <span class="radio-description">The user will be permanently deleted from the system. This action cannot be undone.</span>
+                <span class="radio-description">The user will be permanently deleted from the system. This action cannot
+                  be undone.</span>
               </div>
             </label>
           </div>
@@ -374,7 +332,8 @@
 
         <div *ngIf="deleteAction === 'delete'" class="danger-zone">
           <svg class="danger-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
           <p><strong>Danger Zone:</strong> This action will permanently delete the user and all associated data.</p>
         </div>
@@ -382,13 +341,40 @@
 
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
-        <button 
-          type="button" 
-          class="btn-danger" 
-          (click)="confirmDeleteAction()"
-          [disabled]="loading"
-        >
+        <button type="button" class="btn-danger" (click)="confirmDeleteAction()" [disabled]="loading">
           {{ loading ? 'Processing...' : (deleteAction === 'disable' ? 'Disable User' : 'Delete Permanently') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PARA ASIGNAR NEGOCIO -->
+  <div *ngIf="isAssignBusinessModalOpen" class="modal-overlay">
+    <div class="modal-container dark-modal" style="background: #1a1f28; color: white;">
+      <div class="modal-header">
+        <h2 style="color: white;">Assign {{ assigningUser?.username }} to Business</h2>
+        <button class="close-button" (click)="closeAssignBusinessModal()" style="color: white;">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="businessSelect" style="color: #9ca3af;">Select Business</label>
+          <select id="businessSelect" [(ngModel)]="selectedBusinessId" class="search-input"
+            style="width: 100%; padding-left: 1rem;">
+            <option value="">-- Choose a business --</option>
+            <option *ngFor="let biz of businesses" [value]="biz._id">
+              {{ biz.name }} ({{ biz.address }})
+            </option>
+          </select>
+        </div>
+        <p *ngIf="businesses.length === 0" style="color: #9ca3af;">No businesses found. Create one first.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="pagination-btn" (click)="closeAssignBusinessModal()">Cancel</button>
+        <button type="button" class="export-button" (click)="assignBusiness()"
+          [disabled]="loading || !selectedBusinessId">
+          {{ loading ? 'Assigning...' : 'Assign User' }}
         </button>
       </div>
     </div>
@@ -397,7 +383,8 @@
   <!-- INFORMATION NOTE -->
   <aside class="info-note">
     <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <div class="info-text">
       Last updated: {{ userStats.lastUpdated ? (userStats.lastUpdated | date:'medium') : 'Never' }}

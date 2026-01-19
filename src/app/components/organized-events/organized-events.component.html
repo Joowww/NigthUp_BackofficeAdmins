@@ -9,7 +9,8 @@
       <div class="view-toggle">
         <button (click)="viewMode = 'grid'" [class.active]="viewMode === 'grid'" class="view-btn">
           <svg class="view-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
           </svg>
         </button>
         <button (click)="viewMode = 'list'" [class.active]="viewMode === 'list'" class="view-btn">
@@ -36,7 +37,8 @@
         <div class="stat-label">Total Events</div>
         <div class="stat-icon total">
           <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
       </div>
@@ -49,12 +51,14 @@
         <div class="stat-label">Active Events</div>
         <div class="stat-icon active">
           <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
       </div>
       <div class="stat-value">{{ eventStats.active }}</div>
-      <div class="stat-description">{{ eventStats.total > 0 ? (eventStats.active / eventStats.total * 100 | number:'1.0-0') + '% of total' : '0% of total' }}</div>
+      <div class="stat-description">{{ eventStats.total > 0 ? (eventStats.active / eventStats.total * 100 |
+        number:'1.0-0') + '% of total' : '0% of total' }}</div>
     </div>
 
     <div class="stat-card">
@@ -62,7 +66,8 @@
         <div class="stat-label">Total Attendees</div>
         <div class="stat-icon attendees">
           <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
         </div>
       </div>
@@ -75,7 +80,8 @@
         <div class="stat-label">Avg Attendance</div>
         <div class="stat-icon attendance">
           <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </div>
       </div>
@@ -87,7 +93,8 @@
   <!-- LOADING STATE -->
   <div *ngIf="loading" class="info-note">
     <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <div class="info-text">
       Loading events...
@@ -102,7 +109,8 @@
           <h3 class="event-name">{{ event.name }}</h3>
           <div class="event-venue">
             <svg class="venue-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             </svg>
             {{ getReadableLocation(event) }}
           </div>
@@ -113,19 +121,22 @@
       <div class="event-details">
         <div class="detail-item">
           <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           {{ formatDate(event.schedule) }}
         </div>
         <div class="detail-item">
           <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
           {{ event.category }}
         </div>
         <div class="detail-item">
           <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
           </svg>
           ${{ event.price }}
         </div>
@@ -134,7 +145,7 @@
       <div class="attendance-section">
         <div class="attendance-header">
           <span class="attendance-label">Attendance</span>
-          <span class="attendance-value">{{ event.participants.length || 0 }} / {{ event.capacity }}</span>
+          <span class="attendance-value">{{ event.participants?.length || 0 }} / {{ event.capacity }}</span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" [style.width.%]="getAttendancePercentage(event)"></div>
@@ -145,23 +156,24 @@
         <button class="action-btn primary" (click)="openViewModal(event)">View Details</button>
         <button class="action-btn secondary" (click)="openEditModal(event)">
           <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
         </button>
       </div>
     </div>
   </div>
 
-    <!-- PAGINATION FOOTER -->
-    <footer class="table-footer" *ngIf="!loading && events.length > 0">
-      <div class="pagination-info">
-        Showing {{ pagination.skip + 1 }} - {{ pagination.skip + events.length }} of {{ pagination.total }} events
-      </div>
-      <div class="pagination-controls">
-        <button class="pagination-btn" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
-        <button class="pagination-btn" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
-      </div>
-    </footer>
+  <!-- PAGINATION FOOTER -->
+  <footer class="table-footer" *ngIf="!loading && events.length > 0">
+    <div class="pagination-info">
+      Showing {{ pagination.skip + 1 }} - {{ pagination.skip + events.length }} of {{ pagination.total }} events
+    </div>
+    <div class="pagination-controls">
+      <button class="pagination-btn" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
+      <button class="pagination-btn" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
+    </div>
+  </footer>
 
   <!-- EVENTS TABLE VIEW -->
   <div *ngIf="viewMode === 'list' && !loading" class="events-table-container">
@@ -188,7 +200,7 @@
               <div class="progress-bar-small">
                 <div class="progress-fill" [style.width.%]="getAttendancePercentage(event)"></div>
               </div>
-              <span class="attendance-text">{{ event.participants.length || 0 }}/{{ event.capacity }}</span>
+              <span class="attendance-text">{{ event.participants?.length || 0 }}/{{ event.capacity }}</span>
             </div>
           </td>
           <td>
@@ -198,13 +210,16 @@
             <div class="action-buttons">
               <button class="action-btn-table view" title="View" (click)="openViewModal(event)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </button>
               <button class="action-btn-table edit" title="Edit" (click)="openEditModal(event)">
                 <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </button>
             </div>
@@ -217,7 +232,8 @@
   <!-- NO EVENTS MESSAGE -->
   <div *ngIf="events.length === 0 && !loading" class="info-note">
     <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <div class="info-text">
       No events found. Create your first event using the "Create Event" button above.
@@ -231,7 +247,7 @@
         <h2>Create New Event</h2>
         <button class="close-button" (click)="closeCreateModal()">&times;</button>
       </div>
-      
+
       <div class="modal-body">
         <form (ngSubmit)="submitCreate()" #createForm="ngForm">
           <div class="form-group">
@@ -241,39 +257,44 @@
 
           <div class="form-group">
             <label for="schedule">Date & Time *</label>
-            <input type="datetime-local" id="schedule" name="schedule" [(ngModel)]="newEventData.schedule" required class="form-input">
+            <input type="datetime-local" id="schedule" name="schedule" [(ngModel)]="newEventData.schedule" required
+              class="form-input">
           </div>
 
           <div class="form-group">
             <label for="latitude">Latitude *</label>
-            <input type="number" id="latitude" name="latitude" [(ngModel)]="tempLatitude" 
-                   required class="form-input" step="any" placeholder="40.4168">
+            <input type="number" id="latitude" name="latitude" [(ngModel)]="tempLatitude" required class="form-input"
+              step="any" placeholder="40.4168">
           </div>
 
           <div class="form-group">
             <label for="longitude">Longitude *</label>
-            <input type="number" id="longitude" name="longitude" [(ngModel)]="tempLongitude" 
-                   required class="form-input" step="any" placeholder="-3.7038">
+            <input type="number" id="longitude" name="longitude" [(ngModel)]="tempLongitude" required class="form-input"
+              step="any" placeholder="-3.7038">
           </div>
 
           <div class="form-group">
             <label for="description">Description *</label>
-            <textarea id="description" name="description" [(ngModel)]="newEventData.description" required class="form-input" rows="3"></textarea>
+            <textarea id="description" name="description" [(ngModel)]="newEventData.description" required
+              class="form-input" rows="3"></textarea>
           </div>
 
           <div class="form-group">
             <label for="category">Category *</label>
-            <input type="text" id="category" name="category" [(ngModel)]="newEventData.category" required class="form-input">
+            <input type="text" id="category" name="category" [(ngModel)]="newEventData.category" required
+              class="form-input">
           </div>
 
           <div class="form-group">
             <label for="capacity">Capacity</label>
-            <input type="number" id="capacity" name="capacity" [(ngModel)]="newEventData.capacity" class="form-input" min="1">
+            <input type="number" id="capacity" name="capacity" [(ngModel)]="newEventData.capacity" class="form-input"
+              min="1">
           </div>
 
           <div class="form-group">
             <label for="price">Price ($)</label>
-            <input type="number" id="price" name="price" [(ngModel)]="newEventData.price" class="form-input" min="0" step="0.01">
+            <input type="number" id="price" name="price" [(ngModel)]="newEventData.price" class="form-input" min="0"
+              step="0.01">
           </div>
         </form>
       </div>
@@ -294,49 +315,55 @@
         <h2>Edit Event</h2>
         <button class="close-button" (click)="closeEditModal()">&times;</button>
       </div>
-      
+
       <div class="modal-body">
         <form (ngSubmit)="submitEdit()" #editForm="ngForm">
           <div class="form-group">
             <label for="editName">Event Name *</label>
-            <input type="text" id="editName" name="editName" [(ngModel)]="editedEventData.name" required class="form-input">
+            <input type="text" id="editName" name="editName" [(ngModel)]="editedEventData.name" required
+              class="form-input">
           </div>
 
           <div class="form-group">
             <label for="editSchedule">Date & Time *</label>
-            <input type="datetime-local" id="editSchedule" name="editSchedule" [(ngModel)]="editedEventData.schedule" required class="form-input">
+            <input type="datetime-local" id="editSchedule" name="editSchedule" [(ngModel)]="editedEventData.schedule"
+              required class="form-input">
           </div>
 
           <div class="form-group">
             <label for="editLatitude">Latitude *</label>
-            <input type="number" id="editLatitude" name="editLatitude" [(ngModel)]="tempEditLatitude" 
-                   required class="form-input" step="any">
+            <input type="number" id="editLatitude" name="editLatitude" [(ngModel)]="tempEditLatitude" required
+              class="form-input" step="any">
           </div>
 
           <div class="form-group">
             <label for="editLongitude">Longitude *</label>
-            <input type="number" id="editLongitude" name="editLongitude" [(ngModel)]="tempEditLongitude" 
-                   required class="form-input" step="any">
+            <input type="number" id="editLongitude" name="editLongitude" [(ngModel)]="tempEditLongitude" required
+              class="form-input" step="any">
           </div>
 
           <div class="form-group">
             <label for="editDescription">Description *</label>
-            <textarea id="editDescription" name="editDescription" [(ngModel)]="editedEventData.description" required class="form-input" rows="3"></textarea>
+            <textarea id="editDescription" name="editDescription" [(ngModel)]="editedEventData.description" required
+              class="form-input" rows="3"></textarea>
           </div>
 
           <div class="form-group">
             <label for="editCategory">Category *</label>
-            <input type="text" id="editCategory" name="editCategory" [(ngModel)]="editedEventData.category" required class="form-input">
+            <input type="text" id="editCategory" name="editCategory" [(ngModel)]="editedEventData.category" required
+              class="form-input">
           </div>
 
           <div class="form-group">
             <label for="editCapacity">Capacity</label>
-            <input type="number" id="editCapacity" name="editCapacity" [(ngModel)]="editedEventData.capacity" class="form-input" min="1">
+            <input type="number" id="editCapacity" name="editCapacity" [(ngModel)]="editedEventData.capacity"
+              class="form-input" min="1">
           </div>
 
           <div class="form-group">
             <label for="editPrice">Price ($)</label>
-            <input type="number" id="editPrice" name="editPrice" [(ngModel)]="editedEventData.price" class="form-input" min="0" step="0.01">
+            <input type="number" id="editPrice" name="editPrice" [(ngModel)]="editedEventData.price" class="form-input"
+              min="0" step="0.01">
           </div>
 
           <div class="form-group">
@@ -364,7 +391,7 @@
         <h2>Event Details</h2>
         <button class="close-button" (click)="closeViewModal()">&times;</button>
       </div>
-      
+
       <div class="modal-body" *ngIf="selectedEvent">
         <div class="user-details">
           <div class="detail-row">
@@ -397,7 +424,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Participants:</span>
-            <span class="detail-value">{{ selectedEvent.participants.length || 0 }} registered</span>
+            <span class="detail-value">{{ selectedEvent.participants?.length || 0 }} registered</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Status:</span>

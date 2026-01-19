@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService, UsersResponse, User, UserStats } from '../../services/user.service';
+import { UserService, UsersResponse, UserStats } from '../../services/user.service';
+import { IUser } from '../../models/user';
+import { IBusiness } from '../../models/business';
+import { BusinessService, BusinessResponse } from '../../services/business.service';
 
 @Component({
   selector: 'app-users-database',
@@ -12,8 +15,8 @@ import { UserService, UsersResponse, User, UserStats } from '../../services/user
 })
 export class UsersDatabaseComponent implements OnInit {
   searchTerm = '';
-  users: User[] = [];
-  filteredUsers: User[] = [];
+  users: IUser[] = [];
+  filteredUsers: IUser[] = [];
   userStats: UserStats = {
     total: 0,
     active: 0,
@@ -28,17 +31,28 @@ export class UsersDatabaseComponent implements OnInit {
   isEditModalOpen = false;
   isDeleteModalOpen = false;
   isViewModalOpen = false;
-  editingUser: User | null = null;
-  deletingUser: User | null = null;
-  viewingUser: User | null = null;
-  editedUserData: Partial<User> = {};
+  isAssignBusinessModalOpen = false;
+
+  editingUser: IUser | null = null;
+  deletingUser: IUser | null = null;
+  viewingUser: IUser | null = null;
+  assigningUser: IUser | null = null;
+
+  editedUserData: Partial<IUser> = {};
   deleteAction: 'disable' | 'delete' = 'disable';
+
+  // Business assignment
+  businesses: IBusiness[] = [];
+  selectedBusinessId: string = '';
 
   // Filtros
   roleFilter: string = 'all';
   statusFilter: string = 'all';
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private businessService: BusinessService
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -67,7 +81,7 @@ export class UsersDatabaseComponent implements OnInit {
           };
           this.loading = false;
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error loading users:', error);
           this.loading = false;
         }
@@ -79,7 +93,7 @@ export class UsersDatabaseComponent implements OnInit {
       next: (stats: UserStats) => {
         this.userStats = stats;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading user stats:', error);
       }
     });
@@ -92,7 +106,7 @@ export class UsersDatabaseComponent implements OnInit {
     // Filtro de búsqueda
     if (this.searchTerm) {
       const term = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(user => 
+      filtered = filtered.filter(user =>
         user.username.toLowerCase().includes(term) ||
         user.email.toLowerCase().includes(term)
       );
@@ -121,7 +135,7 @@ export class UsersDatabaseComponent implements OnInit {
       user.email,
       user.role,
       user.active ? 'Active' : 'Inactive',
-      this.formatDate(user.birthday),
+      this.formatDate(user.birthday as string),
       user.events?.length || 0
     ]);
 
@@ -153,12 +167,11 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // Métodos para el modal de edición
-  openEditModal(user: User): void {
-    this.editingUser = { ...user };
+  openEditModal(user: IUser): void {
     this.editedUserData = {
       username: user.username,
       email: user.email,
-      birthday: this.formatDateForInput(user.birthday)
+      birthday: this.formatDateForInput(user.birthday as string)
       // ❌ REMOVIDO: No incluir active aquí
     };
     this.isEditModalOpen = true;
@@ -179,7 +192,7 @@ export class UsersDatabaseComponent implements OnInit {
     }
 
     this.loading = true;
-    
+
     const updateData: any = {
       username: this.editedUserData.username,
       email: this.editedUserData.email,
@@ -193,30 +206,30 @@ export class UsersDatabaseComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           console.log('✅ Update response:', response);
-          
+
           const index = this.users.findIndex(u => u._id === this.editingUser!._id);
           if (index !== -1) {
-            this.users[index] = { 
-              ...this.users[index], 
+            this.users[index] = {
+              ...this.users[index],
               username: updateData.username,
               email: updateData.email,
               birthday: updateData.birthday
             };
           }
-          
+
           this.closeEditModal();
           this.loading = false;
           this.loadUserStats();
           this.loadUsers(this.pagination.skip);
-          
+
           alert('User updated successfully!');
         },
         error: (error: any) => {
           console.error('❌ Error updating user:', error);
           this.loading = false;
-          
+
           let errorMessage = 'Update failed: ';
-          
+
           if (error.status === 401) {
             errorMessage += 'You are not authorized. Please login again.';
           } else if (error.status === 403) {
@@ -242,14 +255,14 @@ export class UsersDatabaseComponent implements OnInit {
           } else {
             errorMessage += `Unknown error (Status: ${error.status}). Check console for details.`;
           }
-          
+
           alert(errorMessage);
         }
       });
   }
 
   // Métodos para el modal de vista
-  openViewModal(user: User): void {
+  openViewModal(user: IUser): void {
     this.viewingUser = user;
     this.isViewModalOpen = true;
   }
@@ -260,7 +273,7 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // Métodos para el modal de eliminación
-  openDeleteModal(user: User): void {
+  openDeleteModal(user: IUser): void {
     this.deletingUser = user;
     this.deleteAction = user.active ? 'disable' : 'delete';
     this.isDeleteModalOpen = true;
@@ -315,7 +328,7 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // Método para reactivar usuario
-  reactivateUser(user: User): void {
+  reactivateUser(user: IUser): void {
     if (!user._id) return;
 
     this.loading = true;
@@ -337,7 +350,7 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // Método para cambiar rol a admin
-  makeUserAdmin(user: User): void {
+  makeUserAdmin(user: IUser): void {
     if (!user._id) return;
 
     this.loading = true;
@@ -361,7 +374,7 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // Método para quitar rol admin
-  removeUserAdmin(user: User): void {
+  removeUserAdmin(user: IUser): void {
     if (!user._id) return;
 
     this.loading = true;
@@ -385,7 +398,7 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // ✅ CORREGIDO: Método para hacer manager
-  makeUserManager(user: User): void {
+  makeUserManager(user: IUser): void {
     if (!user._id) return;
 
     const currentUser = this.userService.getCurrentUser();
@@ -394,7 +407,7 @@ export class UsersDatabaseComponent implements OnInit {
     console.log('Current logged user:', currentUser);
     console.log('Current user role:', currentUser?.role);
     console.log('Is admin?', currentUser?.role === 'admin');
-    
+
     this.loading = true;
     this.userService.makeUserManager(user._id)
       .subscribe({
@@ -411,9 +424,9 @@ export class UsersDatabaseComponent implements OnInit {
         error: (error: any) => {
           console.error('Full error making user manager:', error);
           this.loading = false;
-          
+
           let errorMessage = 'Error making user manager: ';
-          
+
           if (error.status === 401) {
             errorMessage += 'You are not authorized. Please login again.';
           } else if (error.status === 403) {
@@ -431,14 +444,14 @@ export class UsersDatabaseComponent implements OnInit {
           } else {
             errorMessage += `HTTP ${error.status}: ${error.statusText || 'Unknown error'}. Check if the /make-manager endpoint exists in your backend.`;
           }
-          
+
           alert(errorMessage);
         }
       });
   }
 
   // ✅ CORREGIDO: Método para quitar manager
-  removeUserManager(user: User): void {
+  removeUserManager(user: IUser): void {
     if (!user._id) return;
 
     console.log('Removing manager role from:', user.username, 'with ID:', user._id);
@@ -459,9 +472,9 @@ export class UsersDatabaseComponent implements OnInit {
         error: (error: any) => {
           console.error('Full error removing manager role:', error);
           this.loading = false;
-          
+
           let errorMessage = 'Error removing manager role: ';
-          
+
           if (error.status === 401) {
             errorMessage += 'You are not authorized. Please login again.';
           } else if (error.status === 403) {
@@ -479,7 +492,7 @@ export class UsersDatabaseComponent implements OnInit {
           } else {
             errorMessage += `HTTP ${error.status}: ${error.statusText || 'Unknown error'}. Check if the /remove-manager endpoint exists in your backend.`;
           }
-          
+
           alert(errorMessage);
         }
       });
@@ -494,10 +507,10 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // Formatear fecha para display
-  formatDate(dateString: string): string {
-    if (!dateString) return 'N/A';
+  formatDate(dateVal: string | Date | undefined): string {
+    if (!dateVal) return 'N/A';
     try {
-      const date = new Date(dateString);
+      const date = new Date(dateVal);
       return date.toLocaleDateString('en-GB');
     } catch {
       return 'Invalid Date';
@@ -505,10 +518,10 @@ export class UsersDatabaseComponent implements OnInit {
   }
 
   // Formatear fecha para input type="date"
-  formatDateForInput(dateString: string): string {
-    if (!dateString) return '';
+  formatDateForInput(dateVal: string | Date | undefined): string {
+    if (!dateVal) return '';
     try {
-      const date = new Date(dateString);
+      const date = new Date(dateVal);
       return date.toISOString().split('T')[0];
     } catch {
       return '';
@@ -525,5 +538,41 @@ export class UsersDatabaseComponent implements OnInit {
   isCurrentUserAdmin(): boolean {
     const currentUser = this.userService.getCurrentUser();
     return currentUser?.role === 'admin';
+  }
+  // ✅ NUEVO: Business Assignment
+  openAssignBusinessModal(user: IUser): void {
+    this.assigningUser = user;
+    this.isAssignBusinessModalOpen = true;
+    this.loadBusinessesForSelection();
+  }
+
+  loadBusinessesForSelection(): void {
+    this.businessService.getAllBusinesses(0, 100).subscribe({
+      next: (res: BusinessResponse) => this.businesses = res.businesses,
+      error: (err: any) => console.error('Error loading businesses', err)
+    });
+  }
+
+  assignBusiness(): void {
+    if (!this.assigningUser?._id || !this.selectedBusinessId) return;
+
+    this.loading = true;
+    this.businessService.assignManager(this.assigningUser._id, this.selectedBusinessId).subscribe({
+      next: () => {
+        alert('User assigned to business successfully');
+        this.isAssignBusinessModalOpen = false;
+        this.loading = false;
+      },
+      error: (err) => {
+        alert('Error assigning business: ' + (err.error?.message || err.message));
+        this.loading = false;
+      }
+    });
+  }
+
+  closeAssignBusinessModal(): void {
+    this.isAssignBusinessModalOpen = false;
+    this.assigningUser = null;
+    this.selectedBusinessId = '';
   }
 }

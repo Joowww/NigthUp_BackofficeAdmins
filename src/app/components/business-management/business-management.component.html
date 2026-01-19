@@ -1,0 +1,177 @@
+<div class="page-container">
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Business Management</h1>
+      <p class="page-subtitle">Manage venues, locations and managers</p>
+    </div>
+    <div class="header-actions">
+      <button class="export-button" (click)="openCreateModal()">
+        <svg class="export-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Add Business
+      </button>
+    </div>
+  </header>
+
+  <!-- SEARCH SECTION (Placeholder for now) -->
+  <!-- ... existing search pattern if needed ... -->
+
+  <!-- MAIN TABLE -->
+  <section class="table-container">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Venue Name</th>
+          <th>Location</th>
+          <th>Contact</th>
+          <th>Managers</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let business of businesses">
+          <td>
+            <div class="user-info">
+              <div class="user-avatar" [style.background]="'linear-gradient(135deg, #6366f1, #8b5cf6)'">
+                {{ business.name.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <span class="user-name">{{ business.name }}</span>
+                <span class="user-email" style="display: block;">ID: {{ business._id | slice:0:8 }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="user-email">{{ business.address }}</div>
+            <div class="user-id" style="font-size: 0.75rem;">
+              {{ business.location.coordinates[1] }}, {{ business.location.coordinates[0] }}
+            </div>
+          </td>
+          <td>
+            <div class="user-email">{{ business.email }}</div>
+            <div class="user-id">{{ business.phone }}</div>
+          </td>
+          <td>
+            <span class="role-badge">{{ business.managers?.length || 0 }} Assigned</span>
+          </td>
+          <td>
+            <span [class]="'status-badge ' + (business.active ? 'active' : 'inactive')">
+              {{ business.active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-btn view" title="Assign Manager" (click)="openAssignModal(business)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+              </button>
+              <button class="action-btn edit" title="Edit" (click)="openEditModal(business)">
+                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- TABLE FOOTER -->
+    <footer class="table-footer">
+      <div class="pagination-info">
+        Showing {{ businesses.length }} results
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn" (click)="prevPage()" [disabled]="pagination.skip === 0">Previous</button>
+        <button class="pagination-btn" (click)="nextPage()" [disabled]="!pagination.hasMore">Next</button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- CREATE/EDIT MODAL -->
+  <div *ngIf="isCreateModalOpen || isEditModalOpen" class="modal-overlay">
+    <div class="modal-container dark-modal" style="background: #1a1f28; color: white;">
+      <div class="modal-header">
+        <h2>{{ isEditModalOpen ? 'Edit' : 'Add' }} Business</h2>
+        <button class="close-button" style="color: white;" (click)="isCreateModalOpen = false; isEditModalOpen = false">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="submitBusiness()" #businessForm="ngForm">
+          <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" [(ngModel)]="businessData.name" name="name" required class="search-input" style="padding-left: 1rem;">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" [(ngModel)]="businessData.address" name="address" required class="search-input" style="padding-left: 1rem;">
+          </div>
+          <div class="form-group" style="display: flex; gap: 1rem;">
+            <div style="flex: 1;">
+              <label>Phone</label>
+              <input type="text" [(ngModel)]="businessData.phone" name="phone" class="search-input" style="padding-left: 1rem;">
+            </div>
+            <div style="flex: 1;">
+              <label>Email</label>
+              <input type="email" [(ngModel)]="businessData.email" name="email" class="search-input" style="padding-left: 1rem;">
+            </div>
+          </div>
+          <div class="form-group" style="display: flex; gap: 1rem;">
+            <div style="flex: 1;">
+              <label>Latitude</label>
+              <input type="number" [(ngModel)]="tempLat" name="lat" required class="search-input" style="padding-left: 1rem;">
+            </div>
+            <div style="flex: 1;">
+              <label>Longitude</label>
+              <input type="number" [(ngModel)]="tempLng" name="lng" required class="search-input" style="padding-left: 1rem;">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="pagination-btn" (click)="isCreateModalOpen = false; isEditModalOpen = false">Cancel</button>
+        <button class="export-button" (click)="submitBusiness()">{{ isEditModalOpen ? 'Update' : 'Create' }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ASSIGN MANAGER MODAL -->
+  <div *ngIf="isAssignModalOpen" class="modal-overlay">
+    <div class="modal-container dark-modal" style="background: #1a1f28; color: white; max-width: 600px;">
+      <div class="modal-header">
+        <h2>Assign Manager to {{ selectedBusiness?.name }}</h2>
+        <button class="close-button" style="color: white;" (click)="isAssignModalOpen = false">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="search-container" style="margin-bottom: 1rem;">
+          <input type="text" placeholder="Search user by name or email (min 3 chars)..." 
+                 [(ngModel)]="searchUserTerm" (input)="searchUsers()" 
+                 class="search-input" style="padding-left: 1rem;">
+        </div>
+        
+        <div class="found-users-list" style="max-height: 300px; overflow-y: auto;">
+          <div *ngFor="let user of foundUsers" 
+               class="user-item" 
+               [class.selected]="selectedUser?._id === user._id"
+               (click)="selectUser(user)"
+               style="padding: 10px; border: 1px solid #374151; margin-bottom: 5px; border-radius: 8px; cursor: pointer;">
+            <div style="display: flex; justify-content: space-between;">
+              <strong>{{ user.username }}</strong>
+              <span class="role-badge">{{ user.role }}</span>
+            </div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+          <div *ngIf="foundUsers.length === 0 && searchUserTerm.length >= 3" class="user-id">No users found.</div>
+          <div *ngIf="searchingUsers" class="user-id">Searching...</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="pagination-btn" (click)="isAssignModalOpen = false">Cancel</button>
+        <button class="export-button" [disabled]="!selectedUser" (click)="assignManager()">Assign Selected User</button>
+      </div>
+    </div>
+  </div>
+</div>

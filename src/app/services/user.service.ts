@@ -3,19 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
-export interface User {
-  _id?: string;
-  username: string;
-  email: string;
-  password?: string;
-  birthday: string;
-  events: any[];
-  active: boolean;
-  role: 'admin' | 'manager' | 'user';
-}
+import { IUser } from '../models/user';
+export type User = IUser;
 
 export interface UsersResponse {
-  users: User[];
+  users: IUser[];
   pagination: {
     skip: number;
     limit: number;
@@ -26,7 +18,7 @@ export interface UsersResponse {
 
 export interface LoginResponse {
   message: string;
-  user: User;
+  user: IUser;
   token: string;
   refreshToken?: string;
 }
@@ -49,7 +41,7 @@ export interface UserStats {
 })
 export class UserService {
   private apiUrl = `${environment.apiUrl}/user`;
-  private currentUser: User | null = null;
+  private currentUser: IUser | null = null;
 
   constructor(private http: HttpClient) {
     const savedUser = localStorage.getItem('currentUser');
@@ -74,12 +66,12 @@ export class UserService {
     return this.http.get(`${this.apiUrl}/auth/verify`);
   }
 
-  setCurrentUser(user: User): void {
+  setCurrentUser(user: IUser): void {
     this.currentUser = user;
     localStorage.setItem('currentUser', JSON.stringify(user));
   }
 
-  getCurrentUser(): User | null {
+  getCurrentUser(): IUser | null {
     return this.currentUser;
   }
 
@@ -88,7 +80,7 @@ export class UserService {
     const params = new HttpParams()
       .set('skip', skip.toString())
       .set('limit', limit.toString());
-    
+
     return this.http.get<UsersResponse>(this.apiUrl, { params });
   }
 
@@ -96,19 +88,19 @@ export class UserService {
     const params = new HttpParams()
       .set('skip', skip.toString())
       .set('limit', limit.toString());
-    
+
     return this.http.get<UsersResponse>(`${this.apiUrl}/with-inactive`, { params });
   }
 
-  getUserById(id: string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`);
+  getUserById(id: string): Observable<IUser> {
+    return this.http.get<IUser>(`${this.apiUrl}/${id}`);
   }
 
-  createUser(user: Partial<User>): Observable<User> {
-    return this.http.post<User>(this.apiUrl, user);
+  createUser(user: Partial<IUser>): Observable<IUser> {
+    return this.http.post<IUser>(this.apiUrl, user);
   }
 
-  updateUser(id: string, user: Partial<User>): Observable<any> {
+  updateUser(id: string, user: Partial<IUser>): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/${id}`, user);
   }
 
@@ -147,20 +139,20 @@ export class UserService {
   }
 
   // User Profile
-  getMyProfile(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/me`);
+  getMyProfile(): Observable<IUser> {
+    return this.http.get<IUser>(`${this.apiUrl}/me`);
   }
 
-  updateMyProfile(userData: Partial<User>): Observable<any> {
+  updateMyProfile(userData: Partial<IUser>): Observable<any> {
     return this.http.patch(`${this.apiUrl}/me`, userData);
   }
 
   // Admin User Creation
-  createFirstAdmin(user: Partial<User>): Observable<any> {
+  createFirstAdmin(user: Partial<IUser>): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/first-admin`, user);
   }
 
-  createAdminUser(user: Partial<User>): Observable<any> {
+  createAdminUser(user: Partial<IUser>): Observable<any> {
     return this.http.post(`${this.apiUrl}/admin/create`, user);
   }
 

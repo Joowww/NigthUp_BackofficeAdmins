@@ -2,16 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { UserService, User, LoginResponse } from './user.service';
+import { UserService, LoginResponse } from './user.service';
+import { IUser } from '../models/user';
 import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private currentUserSubject = new BehaviorSubject<IUser | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
-  
+
   public currentUser$ = this.currentUserSubject.asObservable();
   public token$ = this.tokenSubject.asObservable();
 
@@ -23,7 +24,7 @@ export class AuthService {
     // Check for stored user and token on init
     const storedUser = localStorage.getItem('currentUser');
     const storedToken = localStorage.getItem('token');
-    
+
     if (storedUser && storedToken) {
       this.currentUserSubject.next(JSON.parse(storedUser));
       this.tokenSubject.next(storedToken);
@@ -36,10 +37,10 @@ export class AuthService {
         if (response.user && response.token) {
           this.currentUserSubject.next(response.user);
           this.tokenSubject.next(response.token);
-          
+
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           localStorage.setItem('token', response.token);
-          
+
           if (response.refreshToken) {
             localStorage.setItem('refreshToken', response.refreshToken);
           }
@@ -51,16 +52,16 @@ export class AuthService {
   logout(): void {
     this.currentUserSubject.next(null);
     this.tokenSubject.next(null);
-    
+
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('isBackoffice');
-    
+
     this.router.navigate(['/login']);
   }
 
-  getCurrentUser(): User | null {
+  getCurrentUser(): IUser | null {
     return this.currentUserSubject.value;
   }
 
@@ -95,11 +96,11 @@ export class AuthService {
   refreshToken(): Observable<any> {
     const refreshToken = localStorage.getItem('refreshToken');
     const userId = this.getCurrentUser()?._id;
-    
+
     if (!refreshToken || !userId) {
       throw new Error('No refresh token available');
     }
-    
+
     return this.userService.refreshToken(refreshToken, userId).pipe(
       tap(response => {
         if (response.token) {
@@ -120,7 +121,7 @@ export class AuthService {
   }
 
   // Update current user in local storage
-  updateCurrentUser(user: User): void {
+  updateCurrentUser(user: IUser): void {
     this.currentUserSubject.next(user);
     localStorage.setItem('currentUser', JSON.stringify(user));
   }
